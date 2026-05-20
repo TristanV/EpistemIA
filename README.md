@@ -1,1 +1,109 @@
-IyBFcGlzdGVtSUEKCioqQXV0ZXVyIDogVHJpc3RhbiBWYW5ydWxsZW4qKgoKRXBpc3RlbUlBIGVzdCB1bmUgYXBwbGljYXRpb24gd2ViIHN0YXRpcXVlIHBlcm1ldHRhbnQgZCdleHBsb3JlciB1biBncmFwaGUgb3JpZW50w6ksIHR5cMOpIGV0IGNocm9ub2xvZ2lxdWUgZGVzIGdyYW5kZXMgYXBwcm9jaGVzIGRlIHJlcHLDqXNlbnRhdGlvbiBkZXMgY29ubmFpc3NhbmNlcywgZGVzIGFyY2hpdGVjdHVyZXMgY29nbml0aXZlcyBldCBkZXMgc3lzdMOobWVzIGRlIG3DqW1vaXJlIGVuIGludGVsbGlnZW5jZSBhcnRpZmljaWVsbGUuCgpMJ2FwcGxpY2F0aW9uIHJlcG9zZSBzdXIgZGV1eCBmaWNoaWVycyBwcmluY2lwYXV4IDoKCi0gYGluZGV4Lmh0bWxgIDogaW50ZXJmYWNlIHV0aWxpc2F0ZXVyLCB2aXN1YWxpc2F0aW9uIGludGVyYWN0aXZlIGR1IGdyYXBoZSwgZmlsdHJlcywgcGFubmVhdSBkZSBkw6l0YWlsCi0gYGVwaXN0ZW1pYV9kYXRhLmpzYCA6IGJhc2UgZGUgZG9ubsOpZXMgSmF2YVNjcmlwdCBleHRlbnNpYmxlIGNvbnRlbmFudCBsZXMgbsWTdWRzLCByZWxhdGlvbnMsIHR5cG9sb2dpZXMgZXQgcsOpZsOpcmVuY2VzCgojIyBPYmplY3RpZgoKTGUgcHJvamV0IHZpc2Ugw6AgZm91cm5pciBkZXMgY2FydG9ncmFwaGllcyBuYXZpZ2FibGVzIGRlcyBjb250aW51aXTDqXMsIHJ1cHR1cmVzLCBjb252ZXJnZW5jZXMgZXQgY3JpdGlxdWVzIGVudHJlIGxlcyBwYXJhZGlnbWVzIHN1aXZhbnRzIDoKCi0gZm9uZGF0aW9ucyBjb2duaXRpdmVzIGV0IHByb3RvLXN5bWJvbGlxdWVzCi0gbG9naXF1ZSBmb3JtZWxsZSBldCBhcmNoaXRlY3R1cmVzIHN5bWJvbGlxdWVzCi0gbG9naXF1ZSBub24gbW9ub3RvbmUgZXQgbWFpbnRlbmFuY2UgZGUgbGEgdsOpcml0w6kKLSBhcmNoaXRlY3R1cmVzIGNvZ25pdGl2ZXMKLSB0ZXByw6lzZW50YXRpb25zIHZlY3RvcmllbmxlcyBldCBkaXN0cmlidXRpb25uZWxsZXMKLSBhcmNoaXRlY3R1cmVzIGNvbm5leGlvbm5pc3RlcyBldCBtw6ltb2lyZSBhc3NvY2lhdGl2ZQotIGFwcHJvY2hlcyBwcm9iYWJpbGlzdGVzIGV0IGJhecOpc2llbm5lcwotIG9udG9sb2dpZXMgZXQgd2ViIHPDqW1hbnRpcXVlCi0gbcOpbW9pcmVzIGF1Z21lbnTDqWVzIHBvdXIgcsOpc2VhdXggbmV1cm9uYXV4Ci0gbW9kw6hsZXMgY29udGV4dHVlbHMgZXQgZ3JhbmRzIG1vZMOobGVzIGRlIGxhbmdhZ2UKLU5ldXJvLXN5bWJvbGlxdWUgZXQgV29ybGQgTW9kZWxzCgojIyBFbnNlbWJsZXMgZGUgZG9ubsOpZXMgY291dmVydHMKCkxhIHByZW1pw6lyZSB2ZXJzaW9uIGR1IGdyYXBoZSAodjMuMCwgNTAgbsWTdWRzLCB+ODAgYXJjcykgY29tcGlsZSBldCBzdHJ1Y3R1cmUgbGVzIGNvbnRlbnVzIGlzc3VzIGRlcyBkb2N1bWVudHMgZGUgdHJhdmFpbCBzdWl2YW50cyA6CgotICpSZXByw6lzZW50YXRpb24gZGVzIGNvbm5haXNzYW5jZXMgOiBkZSBsYSBjYXZlcm5lIMOgIGxhIHNvY2nDqXTDqSBkZSBsJ0lBKiAoVHJpc3RhbiBWYW5ydWxsZW4sIDIwMjUpCi0gKkluZ8OpbmllcmllIGRlcyBzeXN0w6htZXMgZGUgbcOpbW9pcmUgcG91ciBsJ0lBIGF2YW50IGxlcyBMTE1zKiAoVHJpc3RhbiBWYW5ydWxsZW4sIDIwMjUpCi0gKjUwIG51YW5jZXMgZGUgUkFHKiAoVHJpc3RhbiBWYW5ydWxsZW4sIDIwMjYpCi0gKkwnQXRsYXMgZGVzIFZlY3RldXJzIFPDqW1hbnRpcXVlcyogKFRyaXN0YW4gVmFucnVsbGVuLCAyMDIzKQoKTGUgZ3JhcGhlIGNvdXZyZSBsYSBww6lyaW9kZSAtNDAgMDAwIGF2LiBKLi1DLiBhdSBwcsOpc2VudCwgZGVzIHByZW1pw6hyZXMgZXh0ZXJuYWxpc2F0aW9ucyBzeW1ib2xpcXVlcyBhdXggbW9kw6hsZXMgZGUgbGFuZ2FnZSBkZSBsYXJnZSBlY2hlbGxlIGV0IGF1eCB3b3JsZCBtb2RlbHMuCgojIyBTdHJ1Y3R1cmUgZGVzIGRvbm7DqWVzCgpMZSBmaWNoaWVyIGBlcGlzdGVtaWFfZGF0YS5qc2AgZXN0IGNvbsOndSBwb3VyIMOqdHJlIG1vZGlmaWFibGUgZXQgcsOpdXRpbGlzYWJsZS4gQ2hhcXVlIG7FkXVkIGNvbnRpZW50IDoKCi0gYGlkYCwgYGxhYmVsYCwgYHR5cGVgLCBgcGVyaW9kYCwgYHllYXJgCi0gYGF1dGhvcnNgCi0gYGRlc2NyaXB0aW9uYAotIGB0YWdzYAotIGBwcm9ibGVtc1NvbHZlZGAKLSBgcHJvYmxlbXNSYWlzZWRgCi0gYGtleVBhcGVyc2Agb3UgYGtleVdvcmtzYCBhdmVjIFVSTAoKTGVzIHJlbGF0aW9ucyBzb250IHN0b2Now6llcyBzw6lwYXLDqW1lbnQgZGFucyBgZWRnZXNbXWAgYXZlYyB1biB0eXBlIGV0IHVuIGxpYmVsbMOpLiBDZXR0ZSBzdHJ1Y3R1cmUgcGVybWV0IGQnYWpvdXRlciBmYWNpbGVtZW50IGRlIG5vdXZlYXV4IHNvdXMtZ3JhcGhlcyBjb25uZWN0w6lzIMOgIGxhIHZlcnNpb24gYWN0dWVsbGUuCgojIyBVdGlsaXNhdGlvbgoKT3V2cmlyIGBpbmRleC5odG1sYCBkYW5zIHVuIG5hdmlnYXRldXIgbW9kZXJuZS4gQXVjdW4gYmFja2VuZCBuJ2VzdCByZXF1aXMuCgojIyBMaWNlbmNlCgpNSVQ=
+# EpistemIA
+
+**Auteur : Tristan Vanrullen**
+
+> *Explorer l'intelligence artificielle par ses origines, ses fondements et son évolution — de la caverne préhistorique aux grands modèles de langage.*
+
+EpistemIA est une application web statique, exécutable directement via **GitHub Pages** (sans backend ni serveur), qui propose une **carte interactive du savoir en IA** : un graphe orienté, typé et chronologique couvrant les fondements mathématiques, les paradigmes cognitifs, les grandes architectures, les ruptures épistémologiques et les innovations techniques qui ont façonné l'intelligence artificielle depuis ses origines les plus lointaines jusqu'à aujourd'hui.
+
+🌐 **Application en ligne** : [https://tristanv.github.io/EpistemIA/](https://tristanv.github.io/EpistemIA/)
+
+---
+
+## Intention du projet
+
+EpistemIA vise à constituer une **base de connaissances vivante, extensible et navigable** sur l'IA et son histoire. Elle s'adresse aux chercheurs, enseignants, étudiants et curieux qui souhaitent comprendre non seulement *ce que fait* l'IA, mais *d'où elle vient*, *comment ses idées se sont connectées*, et *quelles tensions intellectuelles* ont guidé son développement.
+
+Le graphe épistémologique couvre notamment :
+
+- **Fondations cognitives et proto-symboliques** — des premières externalisations symboliques aux systèmes de comptage anciens
+- **Logique formelle et architectures symboliques** — Aristote, Boole, Frege, Turing, les systèmes experts
+- **Architectures connexionnistes et mémoire associative** — McCulloch-Pitts, Hebb, Hopfield, rétropropagation
+- **Représentations vectorielles et distributionnelles** — word2vec, embeddings, espaces sémantiques
+- **Logique non monotone et maintenance de la vérité** — JTMS, ATMS, raisonnement par défaut
+- **Approches probabilistes et bayésiennes** — réseaux bayésiens, inférence, incertitude
+- **Ontologies et Web sémantique** — RDF, OWL, frames, description logics
+- **Mémoires augmentées pour réseaux neuronaux** — NTM, DNC, mémoire épisodique
+- **Modèles contextuels et grands modèles de langage** — Transformers, BERT, GPT, attention
+- **Neuro-symbolique et World Models** — intégration des paradigmes, modèles du monde
+
+---
+
+## Architecture technique
+
+L'application repose sur une architecture **100 % client-side**, compatible GitHub Pages :
+
+| Fichier | Rôle |
+|---|---|
+| `index.html` | Interface utilisateur, visualisation D3.js, filtres, panneau de détail |
+| `epistemia_data.js` | Base de données JS (nœuds, arcs, types) — version monolithique actuelle |
+
+La roadmap prévoit une **migration progressive vers une architecture multi-fichiers** basée sur des modules ES (`type="module"`) et un dossier `resources/` auto-composé, permettant d'enrichir la base de connaissances en ajoutant simplement de nouveaux fichiers thématiques.
+
+---
+
+## Structure des données
+
+Chaque **nœud** du graphe contient :
+
+```js
+{
+  id: "identifiant-unique",
+  label: "Nom affiché",
+  type: "TypeDeNoeud",          // clé dans nodeTypes
+  period: [annéeDébut, annéeFin],
+  periodLabel: "Description humaine",
+  year: annéeReprésentative,
+  authors: ["Auteur 1", "Auteur 2"],
+  description: "Texte explicatif",
+  tags: ["concept1", "concept2"],
+  problemsSolved: ["..."],
+  problemsRaised: ["..."],
+  keyWorks: [{ title: "...", year: ..., url: "..." }]
+}
+```
+
+Chaque **arc** contient :
+
+```js
+{
+  id: "e-identifiant",
+  from: "id-source",
+  to: "id-cible",
+  type: "TypeDeRelation",       // clé dans edgeTypes
+  label: "Description de la relation"
+}
+```
+
+Les **types de nœuds** (`nodeTypes`) et **types d'arcs** (`edgeTypes`) définissent couleurs, icônes et styles de traits, et constituent le **schéma du graphe**.
+
+---
+
+## Sources compilées dans la v3.0
+
+Le graphe actuel (v3.0 — 50 nœuds, ~80 arcs) structure les contenus issus de :
+
+- *Représentation des connaissances : de la caverne à la société de l'IA* (Tristan Vanrullen, 2025)
+- *Ingénierie des systèmes de mémoire pour l'IA avant les LLMs* (Tristan Vanrullen, 2025)
+- *50 nuances de RAG* (Tristan Vanrullen, 2026)
+- *L'Atlas des Vecteurs Sémantiques* (Tristan Vanrullen, 2023)
+
+La couverture temporelle s'étend de **−40 000 av. J.-C.** (premières peintures rupestres) au **présent** (modèles de langage, world models).
+
+---
+
+## Utilisation
+
+Ouvrir `index.html` dans un navigateur moderne, ou accéder directement à [https://tristanv.github.io/EpistemIA/](https://tristanv.github.io/EpistemIA/). **Aucun backend n'est requis.**
+
+---
+
+## Contribuer
+
+Voir [ROADMAP.md](./ROADMAP.md) pour l'état d'avancement et les prochaines étapes.
+
+---
+
+## Licence
+
+MIT
