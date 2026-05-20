@@ -1,0 +1,6 @@
+# EpistemIA .gitignore
+node_modules/
+.DS_Store
+*.log
+*.bak
+finalize-repo.sh
