@@ -1,3 +1,1110 @@
-<!-- EpistemIA — index.html (depuis kr-graph.html) -->
-<!-- Contenu complet disponible localement : voir finalize-repo.sh -->
-<!-- Pousser manuellement : git clone + cp kr-graph.html index.html + sed + git push -->
+<!DOCTYPE html>
+<html lang="fr" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KR Graph — Représentation des Connaissances</title>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&f[]=cabinet-grotesk@400,500,700&display=swap" rel="stylesheet">
+<script src="./epistemia_data.js"></script>
+<style>
+:root,[data-theme="light"]{
+  --color-bg:#f7f6f2;--color-surface:#f9f8f5;--color-surface-2:#fbfbf9;
+  --color-surface-offset:#f0ede8;--color-surface-dynamic:#e5e2dc;
+  --color-divider:#dcd9d5;--color-border:#d0cdc6;
+  --color-text:#28251d;--color-text-muted:#7a7974;--color-text-faint:#b5b4af;
+  --color-primary:#01696f;--color-primary-hover:#0c4e54;--color-primary-highlight:#cedcd8;
+  --shadow-sm:0 1px 2px rgba(40,37,29,0.06);
+  --shadow-md:0 4px 12px rgba(40,37,29,0.08);
+  --shadow-lg:0 12px 32px rgba(40,37,29,0.14);
+  --radius-sm:.375rem;--radius-md:.5rem;--radius-lg:.75rem;--radius-xl:1rem;
+  --font-body:'Satoshi','Inter',sans-serif;
+  --font-display:'Cabinet Grotesk','Satoshi',sans-serif;
+  --text-xs:clamp(.75rem,.7rem + .25vw,.875rem);
+  --text-sm:clamp(.875rem,.8rem + .35vw,1rem);
+  --text-base:clamp(1rem,.95rem + .25vw,1.125rem);
+  --panel-w:380px;--header-h:56px;--sidebar-w:260px;
+}
+[data-theme="dark"]{
+  --color-bg:#13120f;--color-surface:#181714;--color-surface-2:#1e1d1a;
+  --color-surface-offset:#1a1917;--color-surface-dynamic:#2a2926;
+  --color-divider:#242320;--color-border:#333230;
+  --color-text:#d0cfc9;--color-text-muted:#797876;--color-text-faint:#504f4d;
+  --color-primary:#4f98a3;--color-primary-hover:#227f8b;--color-primary-highlight:#1e3436;
+  --shadow-sm:0 1px 3px rgba(0,0,0,0.65);--shadow-md:0 4px 12px rgba(0,0,0,0.75);--shadow-lg:0 12px 32px rgba(0,0,0,0.88);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+body{height:100dvh;max-height:100dvh;font-family:var(--font-body);font-size:var(--text-sm);
+  color:var(--color-text);background:var(--color-bg);overflow:hidden;display:flex;flex-direction:column}
+button{cursor:pointer;background:none;border:none;font:inherit;color:inherit}
+input,select{font:inherit;color:inherit}
+a{color:var(--color-primary);text-decoration:none}
+a:hover{text-decoration:underline}
+:focus-visible{outline:2px solid var(--color-primary);outline-offset:3px;border-radius:var(--radius-sm)}
+
+/* HEADER */
+#header{
+  height:var(--header-h);flex-shrink:0;
+  background:var(--color-surface);border-bottom:1px solid var(--color-border);
+  display:flex;align-items:center;gap:1rem;padding:0 1rem;
+  box-shadow:var(--shadow-sm);z-index:100;
+}
+#logo{display:flex;align-items:center;gap:.5rem;font-family:var(--font-display);
+  font-weight:700;font-size:var(--text-base);white-space:nowrap;color:var(--color-text)}
+#header-actions{margin-left:auto;display:flex;align-items:center;gap:.5rem}
+.icon-btn{width:32px;height:32px;border-radius:var(--radius-sm);
+  display:flex;align-items:center;justify-content:center;
+  color:var(--color-text-muted);transition:background .15s,color .15s}
+.icon-btn:hover{background:var(--color-surface-dynamic);color:var(--color-text)}
+
+/* MAIN */
+#main{flex:1;display:flex;overflow:hidden;min-height:0;height:0}
+
+/* SIDEBAR — FIX SCROLL */
+#sidebar{
+  width:var(--sidebar-w);flex-shrink:0;
+  background:var(--color-surface);border-right:1px solid var(--color-border);
+  /* FIX scroll: min-height:0 + overflow-y:auto dans un flex-column parent */
+  min-height:0;
+  overflow-y:auto;
+  overflow-x:hidden;
+  padding:.75rem .75rem 2rem;
+  display:flex;flex-direction:column;gap:1rem;
+}
+#sidebar::-webkit-scrollbar{width:4px}
+#sidebar::-webkit-scrollbar-thumb{background:var(--color-border);border-radius:4px}
+
+.filter-section{display:flex;flex-direction:column;gap:.5rem;flex-shrink:0}
+.filter-label{font-size:var(--text-xs);font-weight:600;text-transform:uppercase;
+  letter-spacing:.06em;color:var(--color-text-muted)}
+.filter-search{
+  width:100%;padding:.45rem .6rem;border:1px solid var(--color-border);
+  border-radius:var(--radius-md);background:var(--color-surface-2);
+  font-size:var(--text-xs);color:var(--color-text);transition:border-color .15s;
+}
+.filter-search:focus{border-color:var(--color-primary);outline:none}
+.filter-search::placeholder{color:var(--color-text-faint)}
+.range-row{display:flex;gap:.4rem;align-items:center}
+.range-input{
+  width:100%;padding:.35rem .5rem;border:1px solid var(--color-border);
+  border-radius:var(--radius-sm);background:var(--color-surface-2);font-size:var(--text-xs);
+}
+.range-input:focus{border-color:var(--color-primary);outline:none}
+.tag-grid{display:flex;flex-wrap:wrap;gap:.3rem}
+.filter-tag{
+  padding:.2rem .55rem;border-radius:9999px;font-size:var(--text-xs);cursor:pointer;
+  border:1px solid transparent;transition:all .15s;display:flex;align-items:center;gap:.25rem;
+}
+.filter-tag.active{box-shadow:inset 0 0 0 1px currentColor}
+.filter-tag:hover{opacity:.85}
+.tag-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.reset-btn{
+  width:100%;padding:.4rem;border-radius:var(--radius-sm);
+  background:var(--color-surface-offset);font-size:var(--text-xs);
+  color:var(--color-text-muted);border:1px solid var(--color-border);transition:all .15s;flex-shrink:0;
+}
+.reset-btn:hover{background:var(--color-surface-dynamic);color:var(--color-text)}
+#stats-bar{
+  background:var(--color-surface-offset);border-radius:var(--radius-sm);
+  padding:.4rem .6rem;font-size:var(--text-xs);color:var(--color-text-muted);
+  display:flex;justify-content:space-between;flex-shrink:0;
+}
+#stats-bar span{color:var(--color-text);font-weight:600}
+
+/* Simulation toggle */
+.sim-btn{
+  width:100%;padding:.4rem;border-radius:var(--radius-sm);font-size:var(--text-xs);
+  display:flex;align-items:center;justify-content:center;gap:.4rem;
+  border:1px solid var(--color-border);transition:all .15s;flex-shrink:0;
+}
+.sim-btn.running{background:var(--color-primary);color:#fff;border-color:var(--color-primary)}
+.sim-btn.stopped{background:var(--color-surface-offset);color:var(--color-text-muted)}
+.sim-btn:hover{opacity:.85}
+
+/* GRAPH AREA */
+#graph-area{flex:1;min-height:0;position:relative;overflow:hidden;background:var(--color-bg)}
+#graph-svg{width:100%;height:100%}
+.time-line{stroke:var(--color-divider);stroke-width:1;stroke-dasharray:3,4}
+.time-label{font-size:10px;fill:var(--color-text-faint);font-family:var(--font-body)}
+.type-lane-label{font-size:9px;font-weight:600;font-family:var(--font-body)}
+
+/* ARCS */
+.link{fill:none;stroke-width:1.5;opacity:.5;transition:opacity .2s,stroke-width .2s}
+.link.dimmed{opacity:.04}
+.link.highlighted{opacity:1;stroke-width:2.5}
+
+/* NOEUDS */
+.node-group{cursor:grab}
+.node-group:active{cursor:grabbing}
+.node-group.dimmed .node-circle{opacity:.07}
+.node-group.highlighted .node-circle{filter:brightness(1.25) drop-shadow(0 0 7px currentColor)}
+.node-label{
+  font-size:9.5px;font-family:var(--font-body);font-weight:500;
+  pointer-events:none;fill:var(--color-text);
+  paint-order:stroke;stroke:var(--color-bg);stroke-width:3;stroke-linejoin:round;
+}
+.node-group.dimmed .node-label,.node-group.dimmed .node-icon{opacity:.05}
+.node-icon{font-size:11px;pointer-events:none;dominant-baseline:central;text-anchor:middle}
+
+/* DETAIL PANEL — FIX SCROLL */
+#detail-panel{
+  width:0;flex-shrink:0;
+  background:var(--color-surface);border-left:1px solid var(--color-border);
+  display:flex;flex-direction:column;
+  transition:width .25s cubic-bezier(.16,1,.3,1);
+  box-shadow:var(--shadow-lg);
+  /* FIX scroll: min-height:0 force le flex enfant à rester borné */
+  min-height:0;
+  overflow:hidden;
+}
+#detail-panel.open{width:var(--panel-w)}
+#detail-inner{
+  width:var(--panel-w);
+  flex:1 1 0;
+  min-height:0;
+  overflow-y:auto;
+  overflow-x:hidden;
+  padding:1rem;
+  display:flex;flex-direction:column;gap:1rem;
+}
+#detail-inner::-webkit-scrollbar{width:4px}
+#detail-inner::-webkit-scrollbar-thumb{background:var(--color-border);border-radius:4px}
+
+.detail-header{display:flex;gap:.5rem;align-items:flex-start;flex-shrink:0}
+.detail-icon{
+  width:36px;height:36px;border-radius:var(--radius-md);flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:18px;
+}
+.detail-title{font-family:var(--font-display);font-weight:700;font-size:var(--text-base);
+  line-height:1.25;color:var(--color-text)}
+.detail-period{font-size:var(--text-xs);color:var(--color-text-muted);margin-top:.2rem}
+.detail-type-badge{
+  display:inline-flex;align-items:center;gap:.25rem;
+  padding:.15rem .5rem;border-radius:9999px;font-size:var(--text-xs);font-weight:500;
+}
+.section-title{font-size:var(--text-xs);font-weight:700;text-transform:uppercase;
+  letter-spacing:.06em;color:var(--color-text-muted);margin-bottom:.4rem}
+.detail-desc{font-size:var(--text-xs);line-height:1.6;color:var(--color-text-muted)}
+.authors-list{display:flex;flex-wrap:wrap;gap:.3rem}
+.author-chip{
+  padding:.15rem .45rem;border-radius:9999px;background:var(--color-surface-offset);
+  font-size:var(--text-xs);border:1px solid var(--color-border);
+}
+.works-list{display:flex;flex-direction:column;gap:.35rem}
+.work-item{
+  padding:.4rem .5rem;border-radius:var(--radius-sm);background:var(--color-surface-2);
+  border:1px solid var(--color-border);font-size:var(--text-xs);
+}
+.work-item a{color:var(--color-primary);font-weight:500}
+.work-item .work-year{color:var(--color-text-faint);margin-left:.35rem}
+.tags-wrap{display:flex;flex-wrap:wrap;gap:.3rem}
+.tag-item{
+  padding:.15rem .45rem;border-radius:9999px;
+  background:var(--color-primary-highlight);color:var(--color-primary);
+  font-size:var(--text-xs);border:1px solid rgba(1,105,111,0.2);
+}
+.neighbors-grid{display:flex;flex-direction:column;gap:.5rem}
+.neighbor-section{display:flex;flex-direction:column;gap:.3rem}
+.neighbor-label{font-size:var(--text-xs);color:var(--color-text-muted);font-weight:600}
+.neighbor-item{
+  padding:.35rem .5rem;border-radius:var(--radius-sm);background:var(--color-surface-2);
+  border:1px solid var(--color-border);cursor:pointer;
+  display:flex;align-items:center;gap:.4rem;
+  font-size:var(--text-xs);transition:background .15s,border-color .15s;
+}
+.neighbor-item:hover{background:var(--color-surface-dynamic);border-color:var(--color-primary)}
+.neighbor-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.edge-badge{
+  margin-left:auto;padding:.1rem .4rem;border-radius:9999px;font-size:9.5px;white-space:nowrap;
+}
+.problems-box{display:flex;flex-direction:column;gap:.4rem}
+.problem-item{padding:.35rem .5rem;border-radius:var(--radius-sm);font-size:var(--text-xs);line-height:1.5}
+.problem-solved{background:rgba(67,122,34,0.12);color:#437a22;border:1px solid rgba(67,122,34,0.25)}
+.problem-raised{background:rgba(161,53,68,0.12);color:#a13544;border:1px solid rgba(161,53,68,0.25)}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;pointer-events:none;z-index:999;
+  background:var(--color-surface);border:1px solid var(--color-border);
+  border-radius:var(--radius-md);padding:.45rem .7rem;
+  font-size:var(--text-xs);color:var(--color-text);box-shadow:var(--shadow-md);
+  max-width:260px;opacity:0;transition:opacity .12s;
+}
+#tooltip.visible{opacity:1}
+
+/* LEGEND */
+#legend{
+  position:absolute;bottom:1rem;right:1rem;z-index:50;
+  background:var(--color-surface);border:1px solid var(--color-border);
+  border-radius:var(--radius-lg);padding:.6rem .85rem;
+  font-size:10px;color:var(--color-text-muted);box-shadow:var(--shadow-sm);
+  max-width:190px;display:none;
+}
+#legend.visible{display:block}
+.legend-item{display:flex;align-items:center;gap:.4rem;margin-bottom:.25rem}
+
+/* GRAPH CONTROLS */
+#graph-controls{
+  position:absolute;top:.75rem;right:.75rem;z-index:50;
+  display:flex;flex-direction:column;gap:.3rem;
+}
+.graph-ctrl-btn{
+  width:32px;height:32px;border-radius:var(--radius-sm);
+  background:var(--color-surface);border:1px solid var(--color-border);
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;box-shadow:var(--shadow-sm);
+  color:var(--color-text-muted);transition:all .15s;
+}
+.graph-ctrl-btn:hover{background:var(--color-surface-dynamic);color:var(--color-text)}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--color-border);border-radius:4px}
+* { scrollbar-width:thin; scrollbar-color:var(--color-border) transparent; }
+</style>
+</head>
+<body>
+
+<header id="header">
+  <div id="logo">
+    <svg width="28" height="28" viewBox="0 0 28 28" fill="none" aria-label="KR Graph">
+      <circle cx="14" cy="14" r="13" stroke="var(--color-primary)" stroke-width="1.5"/>
+      <circle cx="7" cy="14" r="3" fill="var(--color-primary)" opacity=".7"/>
+      <circle cx="21" cy="7" r="3" fill="var(--color-primary)"/>
+      <circle cx="21" cy="21" r="3" fill="var(--color-primary)" opacity=".5"/>
+      <line x1="10" y1="14" x2="18" y2="9.5" stroke="var(--color-primary)" stroke-width="1.2" opacity=".6"/>
+      <line x1="10" y1="14" x2="18" y2="18.5" stroke="var(--color-primary)" stroke-width="1.2" opacity=".4"/>
+      <line x1="21" y1="10" x2="21" y2="18" stroke="var(--color-primary)" stroke-width="1.2" opacity=".3"/>
+    </svg>
+    KR Graph <span style="font-size:var(--text-xs);color:var(--color-text-muted);font-weight:400;margin-left:.25rem">v2.1</span>
+  </div>
+  <div id="header-actions">
+    <span id="node-count" style="font-size:var(--text-xs);color:var(--color-text-muted)"></span>
+    <button class="icon-btn" id="toggle-legend-btn" title="Légende des arcs">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+    </button>
+    <button class="icon-btn" data-theme-toggle aria-label="Thème">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    </button>
+  </div>
+</header>
+
+<div id="main">
+  <aside id="sidebar">
+    <div id="stats-bar">
+      <span id="stat-nodes">…</span> nœuds · <span id="stat-edges">…</span> arcs
+    </div>
+
+    <div class="filter-section">
+      <div class="filter-label">Recherche</div>
+      <input id="search-input" class="filter-search" type="search" placeholder="Label, auteur, tag…">
+    </div>
+
+    <div class="filter-section">
+      <div class="filter-label">Période (année)</div>
+      <div class="range-row">
+        <input id="year-min" class="range-input" type="number" placeholder="Début" value="-100000">
+        <span style="color:var(--color-text-faint);font-size:var(--text-xs)">→</span>
+        <input id="year-max" class="range-input" type="number" placeholder="Fin" value="2026">
+      </div>
+    </div>
+
+    <div class="filter-section">
+      <div class="filter-label">Simulation de forces</div>
+      <button id="sim-toggle" class="sim-btn stopped">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor" id="sim-icon"><polygon points="2,1 11,6 2,11"/></svg>
+        <span id="sim-label">Activer la simulation</span>
+      </button>
+    </div>
+
+    <div class="filter-section">
+      <div class="filter-label">Types de nœuds</div>
+      <div id="node-type-filters" class="tag-grid"></div>
+    </div>
+
+    <div class="filter-section">
+      <div class="filter-label">Types de transitions</div>
+      <div id="edge-type-filters" class="tag-grid"></div>
+    </div>
+
+    <button class="reset-btn" id="reset-btn">↺ Réinitialiser les filtres</button>
+  </aside>
+
+  <div id="graph-area">
+    <svg id="graph-svg"></svg>
+    <div id="graph-controls">
+      <button class="graph-ctrl-btn" id="zoom-in-btn" title="Zoom +">+</button>
+      <button class="graph-ctrl-btn" id="zoom-out-btn" title="Zoom −">−</button>
+      <button class="graph-ctrl-btn" id="zoom-reset-btn" title="Vue initiale" style="font-size:10px">⌂</button>
+    </div>
+    <div id="legend">
+      <div style="font-size:10px;font-weight:700;margin-bottom:.4rem;color:var(--color-text)">Transitions</div>
+      <div id="legend-content"></div>
+    </div>
+  </div>
+
+  <aside id="detail-panel" role="complementary">
+    <div id="detail-inner"></div>
+  </aside>
+</div>
+
+<div id="tooltip"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+// ÉTAT
+// ═══════════════════════════════════════════════════════════
+const state = {
+  selectedNode: null,
+  activeNodeTypes: new Set(Object.keys(GRAPH_DATA.nodeTypes)),
+  activeEdgeTypes: new Set(Object.keys(GRAPH_DATA.edgeTypes)),
+  searchText: '',
+  yearMin: -100000,
+  yearMax: 2026,
+  simRunning: false
+};
+
+// Positions persistantes (x,y) — initialisées puis modifiables par drag/simulation
+const nodePos = {}; // { nodeId: {x, y, vx, vy} }
+
+// ═══════════════════════════════════════════════════════════
+// THÈME
+// ═══════════════════════════════════════════════════════════
+(function(){
+  const t = document.querySelector('[data-theme-toggle]');
+  const r = document.documentElement;
+  let d = matchMedia('(prefers-color-scheme:dark)').matches ? 'dark' : 'light';
+  r.setAttribute('data-theme', d);
+  t && t.addEventListener('click', () => {
+    d = d === 'dark' ? 'light' : 'dark';
+    r.setAttribute('data-theme', d);
+    renderAxis();
+    renderLinks();
+    renderNodes();
+  });
+})();
+
+// ═══════════════════════════════════════════════════════════
+// ÉCHELLE TEMPORELLE LOGARITHMIQUE INVERSÉE
+// ═══════════════════════════════════════════════════════════
+// Principe : on transforme les années en "distance au présent" puis on applique
+// log10(distance+1). Plus c'est proche du présent, plus les nœuds sont espacés.
+const PRESENT = 2026;
+const MARGIN_X = 110;
+
+function yearToLogX(year, W) {
+  // Distance au présent (toujours positive)
+  const dist = Math.max(PRESENT - year, 0.5); // min 0.5 pour les nœuds "2026"
+  const logDist = Math.log10(dist + 1);
+  return logDist;
+}
+
+function buildLogScale(nodes, W) {
+  // Calcule les bornes log pour tous les nœuds visibles
+  const allYears = nodes.map(n => (n.period[0] + n.period[1]) / 2);
+  const logVals = allYears.map(y => yearToLogX(y, W));
+  const logMin = Math.min(...logVals);
+  const logMax = Math.max(...logVals);
+  // Retourne une fonction year → x
+  return function(year) {
+    const lv = yearToLogX(year, W);
+    // Inverser: les grandes distances (ancien) → gauche, les petites (récent) → droite
+    const frac = logMax === logMin ? 0.5 : (logMax - lv) / (logMax - logMin);
+    return MARGIN_X + frac * (W - MARGIN_X * 2);
+  };
+}
+
+function buildAxisTicks(yearToX) {
+  // Ticks représentatifs à différentes échelles
+  const ticks = [
+    { year: -100000, label: '−100 000' },
+    { year: -8000,   label: '−8 000' },
+    { year: -3200,   label: '−3 200' },
+    { year: -400,    label: '−400' },
+    { year: 0,       label: '0' },
+    { year: 1000,    label: '1000' },
+    { year: 1500,    label: '1500' },
+    { year: 1700,    label: '1700' },
+    { year: 1800,    label: '1800' },
+    { year: 1850,    label: '1850' },
+    { year: 1900,    label: '1900' },
+    { year: 1940,    label: '1940' },
+    { year: 1950,    label: '1950' },
+    { year: 1960,    label: '1960' },
+    { year: 1970,    label: '1970' },
+    { year: 1980,    label: '1980' },
+    { year: 1990,    label: '1990' },
+    { year: 2000,    label: '2000' },
+    { year: 2010,    label: '2010' },
+    { year: 2015,    label: '2015' },
+    { year: 2020,    label: '2020' },
+    { year: 2023,    label: '2023' },
+    { year: 2025,    label: '2025' },
+    { year: 2026,    label: '2026' },
+  ];
+  return ticks.map(t => ({ ...t, x: yearToX(t.year) }));
+}
+
+// ═══════════════════════════════════════════════════════════
+// POSITIONS INITIALES
+// ═══════════════════════════════════════════════════════════
+function getTypeYFrac(nodeType) {
+  const typeOrder = Object.keys(GRAPH_DATA.nodeTypes);
+  const i = typeOrder.indexOf(nodeType);
+  return i / Math.max(typeOrder.length - 1, 1);
+}
+
+function initPositions(W, H) {
+  const visNodes = getVisibleNodes();
+  const yearToX = buildLogScale(GRAPH_DATA.nodes, W); // sur tous les nœuds pour cohérence
+  const MARGIN_Y = 55;
+
+  // Grouper par slot temporel pour répartir verticalement les nœuds proches
+  const slotMap = {};
+  visNodes.forEach(n => {
+    const yearMid = (n.period[0] + n.period[1]) / 2;
+    const x0 = Math.round(yearToX(yearMid) / 40);
+    const typeOrder = Object.keys(GRAPH_DATA.nodeTypes);
+    const ty = typeOrder.indexOf(n.type);
+    const key = `${x0},${ty}`;
+    if (!slotMap[key]) slotMap[key] = [];
+    slotMap[key].push(n.id);
+  });
+
+  visNodes.forEach(n => {
+    if (nodePos[n.id]) return; // Ne pas écraser les positions manuelles
+    const yearMid = (n.period[0] + n.period[1]) / 2;
+    const x = yearToX(yearMid);
+    const yFrac = getTypeYFrac(n.type);
+    const y = MARGIN_Y + yFrac * (H - MARGIN_Y * 2);
+
+    // Offset Y pour éviter superposition dans le même slot
+    const typeOrder = Object.keys(GRAPH_DATA.nodeTypes);
+    const ty = typeOrder.indexOf(n.type);
+    const x0 = Math.round(x / 40);
+    const key = `${x0},${ty}`;
+    const group = slotMap[key] || [n.id];
+    const groupIdx = group.indexOf(n.id);
+    const offsetY = (groupIdx - (group.length - 1) / 2) * 26;
+
+    nodePos[n.id] = { x, y: y + offsetY, vx: 0, vy: 0 };
+  });
+}
+
+// ═══════════════════════════════════════════════════════════
+// SVG SETUP
+// ═══════════════════════════════════════════════════════════
+const svgEl = document.getElementById('graph-svg');
+const svg = d3.select('#graph-svg');
+let W = svgEl.clientWidth, H = svgEl.clientHeight;
+
+const defs = svg.append('defs');
+
+function ensureMarker(color) {
+  const mid = 'arrow-' + color.replace('#','').replace(/[^a-zA-Z0-9]/g,'');
+  if (!defs.select('#'+mid).empty()) return mid;
+  defs.append('marker')
+    .attr('id', mid).attr('viewBox','0 -4 8 8')
+    .attr('refX', 16).attr('refY', 0)
+    .attr('markerWidth', 6).attr('markerHeight', 6)
+    .attr('orient','auto')
+    .append('path').attr('d','M0,-4L8,0L0,4').attr('fill', color);
+  return mid;
+}
+Object.values(GRAPH_DATA.edgeTypes).forEach(t => ensureMarker(t.color));
+
+const zoomBehavior = d3.zoom().scaleExtent([0.05, 5])
+  .on('zoom', e => g.attr('transform', e.transform));
+svg.call(zoomBehavior);
+
+const g = svg.append('g');
+const gAxis  = g.append('g').attr('class','axis-layer');
+const gLinks = g.append('g').attr('class','links-layer');
+const gNodes = g.append('g').attr('class','nodes-layer');
+
+// ═══════════════════════════════════════════════════════════
+// FILTRAGE
+// ═══════════════════════════════════════════════════════════
+function getVisibleNodes() {
+  return GRAPH_DATA.nodes.filter(n =>
+    state.activeNodeTypes.has(n.type) &&
+    n.period[0] <= state.yearMax && n.period[1] >= state.yearMin &&
+    matchesSearch(n)
+  );
+}
+function getVisibleEdges(visibleNodeIds) {
+  const set = new Set(visibleNodeIds);
+  return GRAPH_DATA.edges.filter(e =>
+    state.activeEdgeTypes.has(e.type) && set.has(e.from) && set.has(e.to)
+  );
+}
+function matchesSearch(node) {
+  if (!state.searchText) return true;
+  const q = state.searchText.toLowerCase();
+  return (
+    node.label.toLowerCase().includes(q) ||
+    (node.authors||[]).some(a => a.toLowerCase().includes(q)) ||
+    (node.tags||[]).some(t => t.toLowerCase().includes(q)) ||
+    (node.description||'').toLowerCase().includes(q)
+  );
+}
+
+// ═══════════════════════════════════════════════════════════
+// SIMULATION D3 FORCE
+// ═══════════════════════════════════════════════════════════
+let simulation = null;
+
+function buildSimulation(visNodes, visEdges) {
+  if (simulation) { simulation.stop(); simulation = null; }
+  if (!state.simRunning) return;
+
+  const yearToX = buildLogScale(GRAPH_DATA.nodes, W);
+
+  // Snapshot des positions actuelles dans les données D3
+  const simNodes = visNodes.map(n => ({
+    id: n.id,
+    x: nodePos[n.id]?.x || W/2,
+    y: nodePos[n.id]?.y || H/2,
+    // ancre temporelle: force X vers la position log-chronologique
+    targetX: yearToX((n.period[0]+n.period[1])/2),
+    // ancre verticale: couloir de type (souple)
+    targetY: 55 + getTypeYFrac(n.type) * (H - 110)
+  }));
+
+  const simLinks = visEdges.map(e => ({
+    source: e.from, target: e.to, type: e.type
+  }));
+
+  simulation = d3.forceSimulation(simNodes)
+    .force('link', d3.forceLink(simLinks).id(d => d.id).distance(90).strength(0.12))
+    .force('charge', d3.forceManyBody().strength(-180).distanceMax(350))
+    .force('collide', d3.forceCollide(28))
+    // Force X: contrainte log-chronologique (forte)
+    .force('xAnchor', d3.forceX(d => d.targetX).strength(0.55))
+    // Force Y: couloir de type (souple, laisse les nœuds se répartir)
+    .force('yAnchor', d3.forceY(d => d.targetY).strength(0.08))
+    .alphaDecay(0.012)
+    .velocityDecay(0.45)
+    .on('tick', () => {
+      simNodes.forEach(sn => {
+        nodePos[sn.id] = { x: sn.x, y: sn.y, vx: sn.vx || 0, vy: sn.vy || 0 };
+      });
+      renderLinks();
+      renderNodes();
+    })
+    .on('end', () => {
+      // Mise à jour finale propre
+      simNodes.forEach(sn => { nodePos[sn.id] = { x: sn.x, y: sn.y }; });
+    });
+}
+
+// ═══════════════════════════════════════════════════════════
+// RENDU AXE
+// ═══════════════════════════════════════════════════════════
+function renderAxis() {
+  gAxis.selectAll('*').remove();
+  const yearToX = buildLogScale(GRAPH_DATA.nodes, W);
+  const ticks = buildAxisTicks(yearToX);
+  const typeOrder = Object.keys(GRAPH_DATA.nodeTypes);
+  const MARGIN_Y = 55;
+
+  // Lignes verticales de temps
+  ticks.forEach(t => {
+    if (t.x < 20 || t.x > W - 10) return;
+    gAxis.append('line').attr('class','time-line')
+      .attr('x1', t.x).attr('x2', t.x).attr('y1', 0).attr('y2', H);
+    gAxis.append('text').attr('class','time-label')
+      .attr('x', t.x + 2).attr('y', H - 6).text(t.label);
+  });
+
+  // Labels de couloirs de types (gauche)
+  typeOrder.forEach((tid, i) => {
+    const yFrac = i / Math.max(typeOrder.length - 1, 1);
+    const y = MARGIN_Y + yFrac * (H - MARGIN_Y * 2);
+    const t = GRAPH_DATA.nodeTypes[tid];
+    gAxis.append('text').attr('class','type-lane-label')
+      .attr('x', 4).attr('y', y + 4)
+      .attr('fill', t.color)
+      .text(t.icon + ' ' + t.label);
+  });
+}
+
+// ═══════════════════════════════════════════════════════════
+// RENDU LIENS
+// ═══════════════════════════════════════════════════════════
+function renderLinks() {
+  const visNodes = getVisibleNodes();
+  const visEdges = getVisibleEdges(visNodes.map(n=>n.id));
+
+  const sel = gLinks.selectAll('.link-g').data(visEdges, d => d.from+'-'+d.to+'-'+d.type);
+  sel.exit().remove();
+  const entered = sel.enter().append('g').attr('class','link-g');
+  entered.append('path').attr('class','link');
+  // Hitarea invisible plus large pour le hover
+  entered.append('path').attr('class','link-hit')
+    .style('fill','none').style('stroke','transparent').style('stroke-width','12');
+
+  const all = gLinks.selectAll('.link-g');
+
+  all.select('.link').each(function(d) {
+    const et = GRAPH_DATA.edgeTypes[d.type];
+    const col = et ? et.color : '#888';
+    d3.select(this)
+      .attr('stroke', col)
+      .attr('stroke-dasharray', et && et.dash !== 'none' ? et.dash : null)
+      .attr('marker-end', `url(#${ensureMarker(col)})`);
+  });
+
+  // Tooltips sur arcs
+  all.on('mouseover.tip', (ev, d) => {
+    const et = GRAPH_DATA.edgeTypes[d.type];
+    showTooltip(ev, `<strong>${et ? et.label : d.type}</strong><br>${d.label||''}`);
+  }).on('mousemove.tip', moveTooltip).on('mouseout.tip', hideTooltip);
+
+  // Positionner tous les arcs
+  updateAllLinkPaths(all);
+
+  applyDimmingVisual();
+}
+
+function curvePath(sx, sy, tx, ty) {
+  const dx = tx - sx, dy = ty - sy;
+  const len = Math.sqrt(dx*dx + dy*dy) || 1;
+  const r = 16;
+  const x1 = sx + dx/len*r, y1 = sy + dy/len*r;
+  const x2 = tx - dx/len*(r+8), y2 = ty - dy/len*(r+8);
+  const mx = (x1+x2)/2 - dy/len*35;
+  const my = (y1+y2)/2 + dx/len*35;
+  return `M${x1},${y1} Q${mx},${my} ${x2},${y2}`;
+}
+
+function updateAllLinkPaths(sel) {
+  sel.select('.link,.link-hit').attr('d', d => {
+    const s = nodePos[d.from], t = nodePos[d.to];
+    if (!s || !t) return '';
+    return curvePath(s.x, s.y, t.x, t.y);
+  });
+}
+
+// ═══════════════════════════════════════════════════════════
+// RENDU NOEUDS
+// ═══════════════════════════════════════════════════════════
+function renderNodes() {
+  const visNodes = getVisibleNodes();
+
+  const sel = gNodes.selectAll('.node-group').data(visNodes, d => d.id);
+  sel.exit().remove();
+  const entered = sel.enter().append('g').attr('class','node-group');
+  entered.append('circle').attr('class','node-circle');
+  entered.append('text').attr('class','node-icon');
+  entered.append('text').attr('class','node-label');
+
+  const all = gNodes.selectAll('.node-group');
+
+  // Drag handler
+  const drag = d3.drag()
+    .on('start', function(event, d) {
+      if (!state.simRunning && simulation) return;
+      // Stopper la vitesse du nœud dans la simulation
+      if (simulation) {
+        const sn = simulation.nodes().find(n => n.id === d.id);
+        if (sn) { sn.fx = sn.x; sn.fy = sn.y; }
+      }
+      d3.select(this).raise();
+    })
+    .on('drag', function(event, d) {
+      // Mettre à jour la position
+      nodePos[d.id] = { x: event.x, y: event.y, vx: 0, vy: 0 };
+      if (simulation) {
+        const sn = simulation.nodes().find(n => n.id === d.id);
+        if (sn) { sn.fx = event.x; sn.fy = event.y; sn.x = event.x; sn.y = event.y; }
+        // Réchauffer la simulation
+        simulation.alpha(Math.max(simulation.alpha(), 0.1)).restart();
+      }
+      // Mettre à jour la position visuelle immédiatement
+      d3.select(this).attr('transform', `translate(${event.x},${event.y})`);
+      // Redessiner les liens connectés
+      gLinks.selectAll('.link-g').select('.link,.link-hit').attr('d', e => {
+        const s = nodePos[e.from], t2 = nodePos[e.to];
+        if (!s || !t2) return '';
+        return curvePath(s.x, s.y, t2.x, t2.y);
+      });
+    })
+    .on('end', function(event, d) {
+      nodePos[d.id] = { x: event.x, y: event.y, vx: 0, vy: 0 };
+      if (simulation) {
+        const sn = simulation.nodes().find(n => n.id === d.id);
+        if (sn) { sn.fx = null; sn.fy = null; } // libérer pour que la sim reprenne
+      }
+    });
+
+  all.call(drag);
+
+  all.on('click', (event, d) => {
+    event.stopPropagation();
+    selectNode(d.id);
+  })
+  .on('mouseover.tip', (ev, d) => {
+    const nt = GRAPH_DATA.nodeTypes[d.type];
+    showTooltip(ev, `<strong>${d.label}</strong><br>${d.periodLabel||''}<br><em>${nt?.label||d.type}</em>`);
+  })
+  .on('mousemove.tip', moveTooltip)
+  .on('mouseout.tip', hideTooltip);
+
+  // Positionner les nœuds
+  all.attr('transform', d => {
+    const p = nodePos[d.id];
+    return p ? `translate(${p.x},${p.y})` : 'translate(0,0)';
+  });
+
+  all.select('.node-circle')
+    .attr('r', 14)
+    .attr('fill', d => (GRAPH_DATA.nodeTypes[d.type]?.color || '#888') + '22')
+    .attr('stroke', d => GRAPH_DATA.nodeTypes[d.type]?.color || '#888')
+    .attr('stroke-width', 2);
+
+  all.select('.node-icon').attr('y', 1)
+    .text(d => GRAPH_DATA.nodeTypes[d.type]?.icon || '●');
+
+  all.select('.node-label').attr('y', 26).attr('text-anchor','middle')
+    .text(d => d.label.length > 22 ? d.label.slice(0,20)+'…' : d.label);
+
+  applyDimmingVisual();
+}
+
+// ═══════════════════════════════════════════════════════════
+// DIMMING
+// ═══════════════════════════════════════════════════════════
+function applyDimmingVisual() {
+  const nodeId = state.selectedNode;
+  if (!nodeId) {
+    gNodes.selectAll('.node-group').classed('dimmed',false).classed('highlighted',false);
+    gLinks.selectAll('.link-g').classed('dimmed',false).classed('highlighted',false);
+    return;
+  }
+  const visNodes = getVisibleNodes().map(n=>n.id);
+  const visEdges = getVisibleEdges(visNodes);
+  const neighbors = new Set([nodeId]);
+  visEdges.forEach(e => {
+    if (e.from === nodeId) neighbors.add(e.to);
+    if (e.to === nodeId) neighbors.add(e.from);
+  });
+  gNodes.selectAll('.node-group')
+    .classed('dimmed', d => !neighbors.has(d.id))
+    .classed('highlighted', d => d.id === nodeId);
+  gLinks.selectAll('.link-g')
+    .classed('dimmed', d => d.from !== nodeId && d.to !== nodeId)
+    .classed('highlighted', d => d.from === nodeId || d.to === nodeId);
+}
+
+function clearDimming() {
+  state.selectedNode = null;
+  applyDimmingVisual();
+}
+
+// ═══════════════════════════════════════════════════════════
+// RENDU COMPLET
+// ═══════════════════════════════════════════════════════════
+function renderGraph() {
+  W = svgEl.clientWidth; H = svgEl.clientHeight;
+  initPositions(W, H);
+  renderAxis();
+  renderLinks();
+  renderNodes();
+
+  const visNodes = getVisibleNodes();
+  const visEdges = getVisibleEdges(visNodes.map(n=>n.id));
+  document.getElementById('stat-nodes').textContent = visNodes.length;
+  document.getElementById('stat-edges').textContent = visEdges.length;
+  document.getElementById('node-count').textContent = `${visNodes.length} / ${GRAPH_DATA.nodes.length} nœuds`;
+
+  if (state.simRunning) {
+    buildSimulation(visNodes, visEdges);
+  }
+}
+
+function updateGraph() {
+  W = svgEl.clientWidth; H = svgEl.clientHeight;
+  initPositions(W, H);
+  renderAxis();
+  renderLinks();
+  renderNodes();
+  const visNodes = getVisibleNodes();
+  const visEdges = getVisibleEdges(visNodes.map(n=>n.id));
+  document.getElementById('stat-nodes').textContent = visNodes.length;
+  document.getElementById('stat-edges').textContent = visEdges.length;
+  document.getElementById('node-count').textContent = `${visNodes.length} / ${GRAPH_DATA.nodes.length} nœuds`;
+  if (state.simRunning) buildSimulation(visNodes, visEdges);
+}
+
+// ═══════════════════════════════════════════════════════════
+// SÉLECTION
+// ═══════════════════════════════════════════════════════════
+function selectNode(nodeId) {
+  state.selectedNode = nodeId;
+  applyDimmingVisual();
+  renderDetailPanel(nodeId);
+  document.getElementById('detail-panel').classList.add('open');
+}
+window.selectNode = selectNode;
+window.clearDimming = clearDimming;
+window.state = state;
+
+svg.on('click', () => {
+  state.selectedNode = null;
+  clearDimming();
+  document.getElementById('detail-panel').classList.remove('open');
+});
+
+// ═══════════════════════════════════════════════════════════
+// PANEL DÉTAIL
+// ═══════════════════════════════════════════════════════════
+function renderDetailPanel(nodeId) {
+  const node = GRAPH_DATA.nodes.find(n => n.id === nodeId);
+  if (!node) return;
+  const nt = GRAPH_DATA.nodeTypes[node.type];
+  const color = nt?.color || '#888';
+  const visNodes = getVisibleNodes().map(n=>n.id);
+  const visEdges = getVisibleEdges(visNodes);
+  const preds = visEdges.filter(e => e.to === nodeId);
+  const succs = visEdges.filter(e => e.from === nodeId);
+
+  document.getElementById('detail-inner').innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-shrink:0">
+      <div class="detail-header" style="flex:1;min-width:0">
+        <div class="detail-icon" style="background:${color}22;color:${color}">${nt?.icon||'●'}</div>
+        <div>
+          <div class="detail-title">${node.label}</div>
+          <div class="detail-period">${node.periodLabel||''}</div>
+          <span class="detail-type-badge" style="background:${color}18;color:${color};border:1px solid ${color}40;margin-top:.3rem">${nt?.label||node.type}</span>
+        </div>
+      </div>
+      <button onclick="document.getElementById('detail-panel').classList.remove('open');state.selectedNode=null;clearDimming();"
+        style="flex-shrink:0;width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:var(--radius-sm);background:var(--color-surface-offset);color:var(--color-text-muted);border:1px solid var(--color-border);cursor:pointer">✕</button>
+    </div>
+    <div>
+      <div class="section-title">Description</div>
+      <p class="detail-desc">${node.description||''}</p>
+    </div>
+    ${node.authors?.length ? `<div>
+      <div class="section-title">Auteurs</div>
+      <div class="authors-list">${node.authors.map(a=>`<span class="author-chip">${a}</span>`).join('')}</div>
+    </div>` : ''}
+    ${node.keyWorks?.length ? `<div>
+      <div class="section-title">Références clés</div>
+      <div class="works-list">${node.keyWorks.map(w=>`
+        <div class="work-item">
+          ${w.url ? `<a href="${w.url}" target="_blank" rel="noopener noreferrer">${w.title}</a>` : w.title}
+          <span class="work-year">(${w.year < 0 ? Math.abs(w.year)+' av. J.-C.' : w.year})</span>
+        </div>`).join('')}
+      </div>
+    </div>` : ''}
+    ${node.tags?.length ? `<div>
+      <div class="section-title">Concepts clés</div>
+      <div class="tags-wrap">${node.tags.map(t=>`<span class="tag-item">${t}</span>`).join('')}</div>
+    </div>` : ''}
+    ${node.problemsSolved?.length || node.problemsRaised?.length ? `<div>
+      <div class="section-title">Problèmes résolus / ouverts</div>
+      <div class="problems-box">
+        ${(node.problemsSolved||[]).map(p=>`<div class="problem-item problem-solved">✓ ${p}</div>`).join('')}
+        ${(node.problemsRaised||[]).map(p=>`<div class="problem-item problem-raised">⚡ ${p}</div>`).join('')}
+      </div>
+    </div>` : ''}
+    <div>
+      <div class="section-title">Voisinage dans le graphe</div>
+      <div class="neighbors-grid">
+        ${preds.length ? `<div class="neighbor-section">
+          <div class="neighbor-label">← Antécédents (${preds.length})</div>
+          ${preds.map(e => {
+            const src = GRAPH_DATA.nodes.find(n=>n.id===e.from);
+            const et = GRAPH_DATA.edgeTypes[e.type];
+            const c2 = GRAPH_DATA.nodeTypes[src?.type]?.color||'#888';
+            return `<div class="neighbor-item" onclick="selectNode('${e.from}')">
+              <span class="neighbor-dot" style="background:${c2}"></span>
+              <span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${src?.label||e.from}</span>
+              <span class="edge-badge" style="background:${et?.color||'#888'}22;color:${et?.color||'#888'}">${et?.label||e.type}</span>
+            </div>`;
+          }).join('')}
+        </div>` : ''}
+        ${succs.length ? `<div class="neighbor-section">
+          <div class="neighbor-label">Successeurs → (${succs.length})</div>
+          ${succs.map(e => {
+            const tgt = GRAPH_DATA.nodes.find(n=>n.id===e.to);
+            const et = GRAPH_DATA.edgeTypes[e.type];
+            const c2 = GRAPH_DATA.nodeTypes[tgt?.type]?.color||'#888';
+            return `<div class="neighbor-item" onclick="selectNode('${e.to}')">
+              <span class="neighbor-dot" style="background:${c2}"></span>
+              <span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${tgt?.label||e.to}</span>
+              <span class="edge-badge" style="background:${et?.color||'#888'}22;color:${et?.color||'#888'}">${et?.label||e.type}</span>
+            </div>`;
+          }).join('')}
+        </div>` : ''}
+        ${!preds.length && !succs.length ? '<div style="color:var(--color-text-faint);font-size:var(--text-xs)">Aucun voisin visible</div>' : ''}
+      </div>
+    </div>`;
+}
+
+// ═══════════════════════════════════════════════════════════
+// TOOLTIP
+// ═══════════════════════════════════════════════════════════
+const tooltip = document.getElementById('tooltip');
+function showTooltip(event, html) {
+  tooltip.innerHTML = html;
+  tooltip.classList.add('visible');
+  moveTooltip(event);
+}
+function moveTooltip(event) {
+  const x = Math.min(event.clientX + 14, window.innerWidth - 280);
+  const y = Math.min(event.clientY + 14, window.innerHeight - 80);
+  tooltip.style.left = x + 'px';
+  tooltip.style.top  = y + 'px';
+}
+function hideTooltip() { tooltip.classList.remove('visible'); }
+
+// ═══════════════════════════════════════════════════════════
+// FILTRES
+// ═══════════════════════════════════════════════════════════
+function buildFilters() {
+  const ntf = document.getElementById('node-type-filters');
+  const etf = document.getElementById('edge-type-filters');
+
+  Object.entries(GRAPH_DATA.nodeTypes).forEach(([id, t]) => {
+    const btn = document.createElement('button');
+    btn.className = 'filter-tag active';
+    btn.dataset.type = id;
+    btn.innerHTML = `<span class="tag-dot" style="background:${t.color}"></span>${t.icon} ${t.label}`;
+    btn.style.color = t.color;
+    btn.style.background = t.color + '18';
+    btn.style.borderColor = t.color + '40';
+    btn.addEventListener('click', () => {
+      btn.classList.toggle('active');
+      state.activeNodeTypes.has(id) ? state.activeNodeTypes.delete(id) : state.activeNodeTypes.add(id);
+      updateGraph();
+    });
+    ntf.appendChild(btn);
+  });
+
+  Object.entries(GRAPH_DATA.edgeTypes).forEach(([id, t]) => {
+    const btn = document.createElement('button');
+    btn.className = 'filter-tag active';
+    btn.dataset.etype = id;
+    btn.style.color = t.color;
+    btn.style.background = t.color + '18';
+    btn.style.borderColor = t.color + '40';
+    btn.textContent = t.label;
+    btn.addEventListener('click', () => {
+      btn.classList.toggle('active');
+      state.activeEdgeTypes.has(id) ? state.activeEdgeTypes.delete(id) : state.activeEdgeTypes.add(id);
+      updateGraph();
+    });
+    etf.appendChild(btn);
+  });
+
+  // Légende
+  const lc = document.getElementById('legend-content');
+  Object.entries(GRAPH_DATA.edgeTypes).forEach(([id, t]) => {
+    const item = document.createElement('div');
+    item.className = 'legend-item';
+    const dash = t.dash === 'none' ? '' : `stroke-dasharray="${t.dash}"`;
+    item.innerHTML = `
+      <svg width="24" height="10" viewBox="0 0 24 10">
+        <line x1="0" y1="5" x2="24" y2="5" stroke="${t.color}" stroke-width="2" ${dash}/>
+      </svg>
+      <span>${t.label}</span>`;
+    lc.appendChild(item);
+  });
+}
+
+// ═══════════════════════════════════════════════════════════
+// CONTRÔLES
+// ═══════════════════════════════════════════════════════════
+document.getElementById('search-input').addEventListener('input', e => {
+  state.searchText = e.target.value;
+  updateGraph();
+});
+document.getElementById('year-min').addEventListener('change', e => {
+  state.yearMin = parseInt(e.target.value) || -100000;
+  // Invalider toutes les positions pour recalculer selon le filtre
+  Object.keys(nodePos).forEach(k => delete nodePos[k]);
+  updateGraph();
+});
+document.getElementById('year-max').addEventListener('change', e => {
+  state.yearMax = parseInt(e.target.value) || 2026;
+  Object.keys(nodePos).forEach(k => delete nodePos[k]);
+  updateGraph();
+});
+
+// Simulation toggle
+const simToggle = document.getElementById('sim-toggle');
+const simLabel  = document.getElementById('sim-label');
+const simIcon   = document.getElementById('sim-icon');
+simToggle.addEventListener('click', () => {
+  state.simRunning = !state.simRunning;
+  if (state.simRunning) {
+    simToggle.classList.add('running');
+    simToggle.classList.remove('stopped');
+    simLabel.textContent = 'Stopper la simulation';
+    simIcon.setAttribute('points', '2,2 10,2 10,10 2,10'); // icône pause
+    const visNodes = getVisibleNodes();
+    const visEdges = getVisibleEdges(visNodes.map(n=>n.id));
+    buildSimulation(visNodes, visEdges);
+  } else {
+    simToggle.classList.remove('running');
+    simToggle.classList.add('stopped');
+    simLabel.textContent = 'Activer la simulation';
+    simIcon.setAttribute('points', '2,1 11,6 2,11'); // icône play
+    if (simulation) { simulation.stop(); simulation = null; }
+  }
+});
+
+document.getElementById('reset-btn').addEventListener('click', () => {
+  state.searchText = ''; state.yearMin = -100000; state.yearMax = 2026;
+  state.activeNodeTypes = new Set(Object.keys(GRAPH_DATA.nodeTypes));
+  state.activeEdgeTypes = new Set(Object.keys(GRAPH_DATA.edgeTypes));
+  document.getElementById('search-input').value = '';
+  document.getElementById('year-min').value = '-100000';
+  document.getElementById('year-max').value = '2026';
+  document.querySelectorAll('.filter-tag').forEach(b => b.classList.add('active'));
+  Object.keys(nodePos).forEach(k => delete nodePos[k]);
+  updateGraph();
+});
+
+document.getElementById('zoom-in-btn').addEventListener('click', () => {
+  svg.transition().duration(300).call(zoomBehavior.scaleBy, 1.4);
+});
+document.getElementById('zoom-out-btn').addEventListener('click', () => {
+  svg.transition().duration(300).call(zoomBehavior.scaleBy, 0.7);
+});
+document.getElementById('zoom-reset-btn').addEventListener('click', () => {
+  Object.keys(nodePos).forEach(k => delete nodePos[k]);
+  svg.transition().duration(400).call(zoomBehavior.transform, d3.zoomIdentity.scale(0.62).translate(40, 10));
+  setTimeout(updateGraph, 420);
+});
+document.getElementById('toggle-legend-btn').addEventListener('click', () => {
+  document.getElementById('legend').classList.toggle('visible');
+});
+
+// ═══════════════════════════════════════════════════════════
+// RESIZE
+// ═══════════════════════════════════════════════════════════
+let resizeTimer;
+window.addEventListener('resize', () => {
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(() => {
+    Object.keys(nodePos).forEach(k => delete nodePos[k]);
+    renderGraph();
+  }, 150);
+});
+
+// ═══════════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════════
+buildFilters();
+setTimeout(() => {
+  W = svgEl.clientWidth; H = svgEl.clientHeight;
+  renderGraph();
+  svg.call(zoomBehavior.transform, d3.zoomIdentity.scale(0.62).translate(40, 10));
+}, 120);
+</script>
+</body>
+</html>
