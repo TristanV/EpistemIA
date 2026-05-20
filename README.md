@@ -1,109 +1,98 @@
 # EpistemIA
 
-**Auteur : Tristan Vanrullen**
-
-> *Explorer l'intelligence artificielle par ses origines, ses fondements et son évolution — de la caverne préhistorique aux grands modèles de langage.*
-
-EpistemIA est une application web statique, exécutable directement via **GitHub Pages** (sans backend ni serveur), qui propose une **carte interactive du savoir en IA** : un graphe orienté, typé et chronologique couvrant les fondements mathématiques, les paradigmes cognitifs, les grandes architectures, les ruptures épistémologiques et les innovations techniques qui ont façonné l'intelligence artificielle depuis ses origines les plus lointaines jusqu'à aujourd'hui.
+> **Graphe épistémologique interactif** retraçant l'histoire, les techniques, les fondements mathématiques et l'évolution de l'Intelligence Artificielle.
 
 🌐 **Application en ligne** : [https://tristanv.github.io/EpistemIA/](https://tristanv.github.io/EpistemIA/)
 
 ---
 
-## Intention du projet
+## Présentation
 
-EpistemIA vise à constituer une **base de connaissances vivante, extensible et navigable** sur l'IA et son histoire. Elle s'adresse aux chercheurs, enseignants, étudiants et curieux qui souhaitent comprendre non seulement *ce que fait* l'IA, mais *d'où elle vient*, *comment ses idées se sont connectées*, et *quelles tensions intellectuelles* ont guidé son développement.
+EpistemIA est une **base de connaissances visuelle et navigable** sur l'IA et son histoire. Le projet se présente comme un graphe orienté où chaque nœud représente un concept, un courant, une percée technique ou un fondement mathématique, et chaque arc représente une relation épistémologique entre ces éléments (évolution, rupture, filiation, émergence, etc.).
 
-Le graphe épistémologique couvre notamment :
+L'ambition est de cartographier :
+- les **origines lointaines** de la pensée computationnelle (de la logique d'Aristote aux mathématiques du XVIIIe siècle)
+- les **fondements mathématiques** de l'IA (calcul des probabilités, algèbre linéaire, optimisation, théorie de l'information)
+- les **grandes familles techniques** (IA symbolique, connexionnisme, apprentissage statistique, apprentissage profond, IA générative)
+- les **ruptures et convergences** qui ont façonné le domaine
+- l'**IA contemporaine** et ses développements récents (LLMs, agents, IA multimodale)
 
-- **Fondations cognitives et proto-symboliques** — des premières externalisations symboliques aux systèmes de comptage anciens
-- **Logique formelle et architectures symboliques** — Aristote, Boole, Frege, Turing, les systèmes experts
-- **Architectures connexionnistes et mémoire associative** — McCulloch-Pitts, Hebb, Hopfield, rétropropagation
-- **Représentations vectorielles et distributionnelles** — word2vec, embeddings, espaces sémantiques
-- **Logique non monotone et maintenance de la vérité** — JTMS, ATMS, raisonnement par défaut
-- **Approches probabilistes et bayésiennes** — réseaux bayésiens, inférence, incertitude
-- **Ontologies et Web sémantique** — RDF, OWL, frames, description logics
-- **Mémoires augmentées pour réseaux neuronaux** — NTM, DNC, mémoire épisodique
-- **Modèles contextuels et grands modèles de langage** — Transformers, BERT, GPT, attention
-- **Neuro-symbolique et World Models** — intégration des paradigmes, modèles du monde
+## Fonctionnalités
 
----
+- 🗺️ **Graphe interactif** avec axe temporel logarithmique (de −100 000 à aujourd'hui)
+- 🔍 **Filtres** par type de nœud, type de transition et plage temporelle
+- 🔎 **Recherche** par label, auteur, tag ou description
+- ⚡ **Simulation de forces** D3.js pour réorganiser le graphe
+- 🖱️ **Drag & drop** des nœuds
+- 📋 **Panneau de détail** avec description, auteurs, références clés et voisinage
+- 🌓 **Mode sombre / clair**
 
-## Architecture technique
+## Architecture
 
-L'application repose sur une architecture **100 % client-side**, compatible GitHub Pages :
-
-| Fichier | Rôle |
-|---|---|
-| `index.html` | Interface utilisateur, visualisation D3.js, filtres, panneau de détail |
-| `epistemia_data.js` | Base de données JS (nœuds, arcs, types) — version monolithique actuelle |
-
-La roadmap prévoit une **migration progressive vers une architecture multi-fichiers** basée sur des modules ES (`type="module"`) et un dossier `resources/` auto-composé, permettant d'enrichir la base de connaissances en ajoutant simplement de nouveaux fichiers thématiques.
-
----
-
-## Structure des données
-
-Chaque **nœud** du graphe contient :
-
-```js
-{
-  id: "identifiant-unique",
-  label: "Nom affiché",
-  type: "TypeDeNoeud",          // clé dans nodeTypes
-  period: [annéeDébut, annéeFin],
-  periodLabel: "Description humaine",
-  year: annéeReprésentative,
-  authors: ["Auteur 1", "Auteur 2"],
-  description: "Texte explicatif",
-  tags: ["concept1", "concept2"],
-  problemsSolved: ["..."],
-  problemsRaised: ["..."],
-  keyWorks: [{ title: "...", year: ..., url: "..." }]
-}
+```
+epistemIA/
+├── index.html          ← Application complète (HTML + CSS + JS)
+├── epistemia_data.js   ← Données du graphe (GRAPH_DATA)
+├── README.md           ← Ce fichier
+└── ROADMAP.md          ← Feuille de route
 ```
 
-Chaque **arc** contient :
+L'application est **100% statique** et s'exécute directement via GitHub Pages sans aucun backend.
+
+## Format des données
+
+Le fichier `epistemia_data.js` expose un objet global `GRAPH_DATA` :
 
 ```js
-{
-  id: "e-identifiant",
-  from: "id-source",
-  to: "id-cible",
-  type: "TypeDeRelation",       // clé dans edgeTypes
-  label: "Description de la relation"
-}
+const GRAPH_DATA = {
+  meta: { title: "...", version: "...", description: "..." },
+  nodeTypes: {
+    "Nom du type": { label: "...", color: "#hex", icon: "emoji" },
+    // ...
+  },
+  edgeTypes: {
+    "Nom du type": { label: "...", color: "#hex", dash: "none|5,3|2,2" },
+    // ...
+  },
+  nodes: [
+    {
+      id: "identifiant-unique",
+      label: "Nom affiché",
+      type: "Nom du type",           // doit correspondre à une clé de nodeTypes
+      period: [anneeDebut, anneeFin],
+      periodLabel: "Texte libre",
+      description: "...",
+      authors: ["Nom Prénom"],
+      tags: ["concept", "domaine"],
+      keyWorks: [
+        { title: "Titre", year: 1950, url: "https://..." }
+      ],
+      problemsSolved: ["Problème résolu 1"],
+      problemsRaised: ["Question ouverte 1"]
+    }
+  ],
+  edges: [
+    {
+      id: "e001",
+      from: "id-source",
+      to: "id-cible",
+      type: "Nom du type",           // doit correspondre à une clé de edgeTypes
+      label: "Description de la relation"
+    }
+  ]
+};
 ```
-
-Les **types de nœuds** (`nodeTypes`) et **types d'arcs** (`edgeTypes`) définissent couleurs, icônes et styles de traits, et constituent le **schéma du graphe**.
-
----
-
-## Sources compilées dans la v3.0
-
-Le graphe actuel (v3.0 — 50 nœuds, ~80 arcs) structure les contenus issus de :
-
-- *Représentation des connaissances : de la caverne à la société de l'IA* (Tristan Vanrullen, 2025)
-- *Ingénierie des systèmes de mémoire pour l'IA avant les LLMs* (Tristan Vanrullen, 2025)
-- *50 nuances de RAG* (Tristan Vanrullen, 2026)
-- *L'Atlas des Vecteurs Sémantiques* (Tristan Vanrullen, 2023)
-
-La couverture temporelle s'étend de **−40 000 av. J.-C.** (premières peintures rupestres) au **présent** (modèles de langage, world models).
-
----
-
-## Utilisation
-
-Ouvrir `index.html` dans un navigateur moderne, ou accéder directement à [https://tristanv.github.io/EpistemIA/](https://tristanv.github.io/EpistemIA/). **Aucun backend n'est requis.**
-
----
 
 ## Contribuer
 
-Voir [ROADMAP.md](./ROADMAP.md) pour l'état d'avancement et les prochaines étapes.
+Pour enrichir la base de connaissances, il suffit d'éditer `epistemia_data.js` en ajoutant des entrées dans `nodes[]` et `edges[]` en respectant le schéma ci-dessus. Consultez le fichier [ROADMAP.md](ROADMAP.md) pour les prochaines évolutions architecturales prévues.
 
----
+## Technologies
+
+- [D3.js v7](https://d3js.org/) — rendu SVG, simulation de forces, zoom
+- [Fontshare](https://www.fontshare.com/) — typographies (Satoshi, Cabinet Grotesk)
+- GitHub Pages — hébergement statique serverless
 
 ## Licence
 
-MIT
+MIT — voir [LICENSE](LICENSE)

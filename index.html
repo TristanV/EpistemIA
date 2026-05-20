@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>EpistemIA — Représentation des Connaissances en IA et sur l'IA</title>
+<title>EpistemIA — Base de connaissances sur l'IA</title>
+<meta name="description" content="EpistemIA — Graphe épistémologique interactif retraçant l'histoire, les techniques, les fondements mathématiques et l'évolution de l'Intelligence Artificielle.">
 <script src="https://d3js.org/d3.v7.min.js"></script>
 <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&f[]=cabinet-grotesk@400,500,700&display=swap" rel="stylesheet">
 <script src="./epistemia_data.js"></script>
@@ -61,11 +62,10 @@ a:hover{text-decoration:underline}
 /* MAIN */
 #main{flex:1;display:flex;overflow:hidden;min-height:0;height:0}
 
-/* SIDEBAR — FIX SCROLL */
+/* SIDEBAR */
 #sidebar{
   width:var(--sidebar-w);flex-shrink:0;
   background:var(--color-surface);border-right:1px solid var(--color-border);
-  /* FIX scroll: min-height:0 + overflow-y:auto dans un flex-column parent */
   min-height:0;
   overflow-y:auto;
   overflow-x:hidden;
@@ -112,7 +112,6 @@ a:hover{text-decoration:underline}
 }
 #stats-bar span{color:var(--color-text);font-weight:600}
 
-/* Simulation toggle */
 .sim-btn{
   width:100%;padding:.4rem;border-radius:var(--radius-sm);font-size:var(--text-xs);
   display:flex;align-items:center;justify-content:center;gap:.4rem;
@@ -129,12 +128,10 @@ a:hover{text-decoration:underline}
 .time-label{font-size:10px;fill:var(--color-text-faint);font-family:var(--font-body)}
 .type-lane-label{font-size:9px;font-weight:600;font-family:var(--font-body)}
 
-/* ARCS */
 .link{fill:none;stroke-width:1.5;opacity:.5;transition:opacity .2s,stroke-width .2s}
 .link.dimmed{opacity:.04}
 .link.highlighted{opacity:1;stroke-width:2.5}
 
-/* NOEUDS */
 .node-group{cursor:grab}
 .node-group:active{cursor:grabbing}
 .node-group.dimmed .node-circle{opacity:.07}
@@ -147,14 +144,13 @@ a:hover{text-decoration:underline}
 .node-group.dimmed .node-label,.node-group.dimmed .node-icon{opacity:.05}
 .node-icon{font-size:11px;pointer-events:none;dominant-baseline:central;text-anchor:middle}
 
-/* DETAIL PANEL — FIX SCROLL */
+/* DETAIL PANEL */
 #detail-panel{
   width:0;flex-shrink:0;
   background:var(--color-surface);border-left:1px solid var(--color-border);
   display:flex;flex-direction:column;
   transition:width .25s cubic-bezier(.16,1,.3,1);
   box-shadow:var(--shadow-lg);
-  /* FIX scroll: min-height:0 force le flex enfant à rester borné */
   min-height:0;
   overflow:hidden;
 }
@@ -223,7 +219,6 @@ a:hover{text-decoration:underline}
 .problem-solved{background:rgba(67,122,34,0.12);color:#437a22;border:1px solid rgba(67,122,34,0.25)}
 .problem-raised{background:rgba(161,53,68,0.12);color:#a13544;border:1px solid rgba(161,53,68,0.25)}
 
-/* TOOLTIP */
 #tooltip{
   position:fixed;pointer-events:none;z-index:999;
   background:var(--color-surface);border:1px solid var(--color-border);
@@ -233,7 +228,6 @@ a:hover{text-decoration:underline}
 }
 #tooltip.visible{opacity:1}
 
-/* LEGEND */
 #legend{
   position:absolute;bottom:1rem;right:1rem;z-index:50;
   background:var(--color-surface);border:1px solid var(--color-border);
@@ -244,7 +238,6 @@ a:hover{text-decoration:underline}
 #legend.visible{display:block}
 .legend-item{display:flex;align-items:center;gap:.4rem;margin-bottom:.25rem}
 
-/* GRAPH CONTROLS */
 #graph-controls{
   position:absolute;top:.75rem;right:.75rem;z-index:50;
   display:flex;flex-direction:column;gap:.3rem;
@@ -267,23 +260,30 @@ a:hover{text-decoration:underline}
 
 <header id="header">
   <div id="logo">
-    <svg width="28" height="28" viewBox="0 0 28 28" fill="none" aria-label="KR Graph">
+    <!-- EpistemIA logo SVG -->
+    <svg width="28" height="28" viewBox="0 0 28 28" fill="none" aria-label="EpistemIA">
       <circle cx="14" cy="14" r="13" stroke="var(--color-primary)" stroke-width="1.5"/>
-      <circle cx="7" cy="14" r="3" fill="var(--color-primary)" opacity=".7"/>
-      <circle cx="21" cy="7" r="3" fill="var(--color-primary)"/>
-      <circle cx="21" cy="21" r="3" fill="var(--color-primary)" opacity=".5"/>
-      <line x1="10" y1="14" x2="18" y2="9.5" stroke="var(--color-primary)" stroke-width="1.2" opacity=".6"/>
-      <line x1="10" y1="14" x2="18" y2="18.5" stroke="var(--color-primary)" stroke-width="1.2" opacity=".4"/>
-      <line x1="21" y1="10" x2="21" y2="18" stroke="var(--color-primary)" stroke-width="1.2" opacity=".3"/>
+      <!-- Nœud central (connaissance) -->
+      <circle cx="14" cy="14" r="3.5" fill="var(--color-primary)"/>
+      <!-- Nœuds satellites -->
+      <circle cx="6"  cy="9"  r="2.2" fill="var(--color-primary)" opacity=".6"/>
+      <circle cx="22" cy="9"  r="2.2" fill="var(--color-primary)" opacity=".6"/>
+      <circle cx="6"  cy="19" r="2.2" fill="var(--color-primary)" opacity=".4"/>
+      <circle cx="22" cy="19" r="2.2" fill="var(--color-primary)" opacity=".4"/>
+      <!-- Arcs -->
+      <line x1="8" y1="10" x2="11.5" y2="12.5" stroke="var(--color-primary)" stroke-width="1.2" opacity=".5"/>
+      <line x1="20" y1="10" x2="16.5" y2="12.5" stroke="var(--color-primary)" stroke-width="1.2" opacity=".5"/>
+      <line x1="8" y1="18" x2="11.5" y2="15.5" stroke="var(--color-primary)" stroke-width="1.2" opacity=".35"/>
+      <line x1="20" y1="18" x2="16.5" y2="15.5" stroke="var(--color-primary)" stroke-width="1.2" opacity=".35"/>
     </svg>
-    KR Graph <span style="font-size:var(--text-xs);color:var(--color-text-muted);font-weight:400;margin-left:.25rem">v2.1</span>
+    EpistemIA <span style="font-size:var(--text-xs);color:var(--color-text-muted);font-weight:400;margin-left:.25rem">v2.1</span>
   </div>
   <div id="header-actions">
     <span id="node-count" style="font-size:var(--text-xs);color:var(--color-text-muted)"></span>
     <button class="icon-btn" id="toggle-legend-btn" title="Légende des arcs">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
     </button>
-    <button class="icon-btn" data-theme-toggle aria-label="Thème">
+    <button class="icon-btn" data-theme-toggle aria-label="Basculer le thème">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
     </button>
   </div>
@@ -297,21 +297,21 @@ a:hover{text-decoration:underline}
 
     <div class="filter-section">
       <div class="filter-label">Recherche</div>
-      <input id="search-input" class="filter-search" type="search" placeholder="Label, auteur, tag…">
+      <input id="search-input" class="filter-search" type="search" placeholder="Label, auteur, tag…" aria-label="Recherche dans le graphe">
     </div>
 
     <div class="filter-section">
       <div class="filter-label">Période (année)</div>
       <div class="range-row">
-        <input id="year-min" class="range-input" type="number" placeholder="Début" value="-100000">
+        <input id="year-min" class="range-input" type="number" placeholder="Début" value="-100000" aria-label="Année de début">
         <span style="color:var(--color-text-faint);font-size:var(--text-xs)">→</span>
-        <input id="year-max" class="range-input" type="number" placeholder="Fin" value="2026">
+        <input id="year-max" class="range-input" type="number" placeholder="Fin" value="2026" aria-label="Année de fin">
       </div>
     </div>
 
     <div class="filter-section">
       <div class="filter-label">Simulation de forces</div>
-      <button id="sim-toggle" class="sim-btn stopped">
+      <button id="sim-toggle" class="sim-btn stopped" aria-label="Activer la simulation de forces">
         <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor" id="sim-icon"><polygon points="2,1 11,6 2,11"/></svg>
         <span id="sim-label">Activer la simulation</span>
       </button>
@@ -330,25 +330,25 @@ a:hover{text-decoration:underline}
     <button class="reset-btn" id="reset-btn">↺ Réinitialiser les filtres</button>
   </aside>
 
-  <div id="graph-area">
+  <div id="graph-area" role="main" aria-label="Graphe épistémologique de l'IA">
     <svg id="graph-svg"></svg>
-    <div id="graph-controls">
-      <button class="graph-ctrl-btn" id="zoom-in-btn" title="Zoom +">+</button>
-      <button class="graph-ctrl-btn" id="zoom-out-btn" title="Zoom −">−</button>
-      <button class="graph-ctrl-btn" id="zoom-reset-btn" title="Vue initiale" style="font-size:10px">⌂</button>
+    <div id="graph-controls" aria-label="Contrôles du zoom">
+      <button class="graph-ctrl-btn" id="zoom-in-btn" title="Zoom +" aria-label="Zoom avant">+</button>
+      <button class="graph-ctrl-btn" id="zoom-out-btn" title="Zoom −" aria-label="Zoom arrière">−</button>
+      <button class="graph-ctrl-btn" id="zoom-reset-btn" title="Vue initiale" aria-label="Réinitialiser la vue" style="font-size:10px">⌂</button>
     </div>
-    <div id="legend">
+    <div id="legend" role="complementary" aria-label="Légende des transitions">
       <div style="font-size:10px;font-weight:700;margin-bottom:.4rem;color:var(--color-text)">Transitions</div>
       <div id="legend-content"></div>
     </div>
   </div>
 
-  <aside id="detail-panel" role="complementary">
+  <aside id="detail-panel" role="complementary" aria-label="Détail du nœud sélectionné">
     <div id="detail-inner"></div>
   </aside>
 </div>
 
-<div id="tooltip"></div>
+<div id="tooltip" role="tooltip"></div>
 
 <script>
 // ═══════════════════════════════════════════════════════════
@@ -364,8 +364,7 @@ const state = {
   simRunning: false
 };
 
-// Positions persistantes (x,y) — initialisées puis modifiables par drag/simulation
-const nodePos = {}; // { nodeId: {x, y, vx, vy} }
+const nodePos = {};
 
 // ═══════════════════════════════════════════════════════════
 // THÈME
@@ -378,6 +377,7 @@ const nodePos = {}; // { nodeId: {x, y, vx, vy} }
   t && t.addEventListener('click', () => {
     d = d === 'dark' ? 'light' : 'dark';
     r.setAttribute('data-theme', d);
+    t.setAttribute('aria-label', 'Basculer vers le thème ' + (d === 'dark' ? 'clair' : 'sombre'));
     renderAxis();
     renderLinks();
     renderNodes();
@@ -387,35 +387,28 @@ const nodePos = {}; // { nodeId: {x, y, vx, vy} }
 // ═══════════════════════════════════════════════════════════
 // ÉCHELLE TEMPORELLE LOGARITHMIQUE INVERSÉE
 // ═══════════════════════════════════════════════════════════
-// Principe : on transforme les années en "distance au présent" puis on applique
-// log10(distance+1). Plus c'est proche du présent, plus les nœuds sont espacés.
 const PRESENT = 2026;
 const MARGIN_X = 110;
 
 function yearToLogX(year, W) {
-  // Distance au présent (toujours positive)
-  const dist = Math.max(PRESENT - year, 0.5); // min 0.5 pour les nœuds "2026"
+  const dist = Math.max(PRESENT - year, 0.5);
   const logDist = Math.log10(dist + 1);
   return logDist;
 }
 
 function buildLogScale(nodes, W) {
-  // Calcule les bornes log pour tous les nœuds visibles
   const allYears = nodes.map(n => (n.period[0] + n.period[1]) / 2);
   const logVals = allYears.map(y => yearToLogX(y, W));
   const logMin = Math.min(...logVals);
   const logMax = Math.max(...logVals);
-  // Retourne une fonction year → x
   return function(year) {
     const lv = yearToLogX(year, W);
-    // Inverser: les grandes distances (ancien) → gauche, les petites (récent) → droite
     const frac = logMax === logMin ? 0.5 : (logMax - lv) / (logMax - logMin);
     return MARGIN_X + frac * (W - MARGIN_X * 2);
   };
 }
 
 function buildAxisTicks(yearToX) {
-  // Ticks représentatifs à différentes échelles
   const ticks = [
     { year: -100000, label: '−100 000' },
     { year: -8000,   label: '−8 000' },
@@ -456,10 +449,9 @@ function getTypeYFrac(nodeType) {
 
 function initPositions(W, H) {
   const visNodes = getVisibleNodes();
-  const yearToX = buildLogScale(GRAPH_DATA.nodes, W); // sur tous les nœuds pour cohérence
+  const yearToX = buildLogScale(GRAPH_DATA.nodes, W);
   const MARGIN_Y = 55;
 
-  // Grouper par slot temporel pour répartir verticalement les nœuds proches
   const slotMap = {};
   visNodes.forEach(n => {
     const yearMid = (n.period[0] + n.period[1]) / 2;
@@ -472,13 +464,12 @@ function initPositions(W, H) {
   });
 
   visNodes.forEach(n => {
-    if (nodePos[n.id]) return; // Ne pas écraser les positions manuelles
+    if (nodePos[n.id]) return;
     const yearMid = (n.period[0] + n.period[1]) / 2;
     const x = yearToX(yearMid);
     const yFrac = getTypeYFrac(n.type);
     const y = MARGIN_Y + yFrac * (H - MARGIN_Y * 2);
 
-    // Offset Y pour éviter superposition dans le même slot
     const typeOrder = Object.keys(GRAPH_DATA.nodeTypes);
     const ty = typeOrder.indexOf(n.type);
     const x0 = Math.round(x / 40);
@@ -560,14 +551,11 @@ function buildSimulation(visNodes, visEdges) {
 
   const yearToX = buildLogScale(GRAPH_DATA.nodes, W);
 
-  // Snapshot des positions actuelles dans les données D3
   const simNodes = visNodes.map(n => ({
     id: n.id,
     x: nodePos[n.id]?.x || W/2,
     y: nodePos[n.id]?.y || H/2,
-    // ancre temporelle: force X vers la position log-chronologique
     targetX: yearToX((n.period[0]+n.period[1])/2),
-    // ancre verticale: couloir de type (souple)
     targetY: 55 + getTypeYFrac(n.type) * (H - 110)
   }));
 
@@ -579,9 +567,7 @@ function buildSimulation(visNodes, visEdges) {
     .force('link', d3.forceLink(simLinks).id(d => d.id).distance(90).strength(0.12))
     .force('charge', d3.forceManyBody().strength(-180).distanceMax(350))
     .force('collide', d3.forceCollide(28))
-    // Force X: contrainte log-chronologique (forte)
     .force('xAnchor', d3.forceX(d => d.targetX).strength(0.55))
-    // Force Y: couloir de type (souple, laisse les nœuds se répartir)
     .force('yAnchor', d3.forceY(d => d.targetY).strength(0.08))
     .alphaDecay(0.012)
     .velocityDecay(0.45)
@@ -593,7 +579,6 @@ function buildSimulation(visNodes, visEdges) {
       renderNodes();
     })
     .on('end', () => {
-      // Mise à jour finale propre
       simNodes.forEach(sn => { nodePos[sn.id] = { x: sn.x, y: sn.y }; });
     });
 }
@@ -608,7 +593,6 @@ function renderAxis() {
   const typeOrder = Object.keys(GRAPH_DATA.nodeTypes);
   const MARGIN_Y = 55;
 
-  // Lignes verticales de temps
   ticks.forEach(t => {
     if (t.x < 20 || t.x > W - 10) return;
     gAxis.append('line').attr('class','time-line')
@@ -617,7 +601,6 @@ function renderAxis() {
       .attr('x', t.x + 2).attr('y', H - 6).text(t.label);
   });
 
-  // Labels de couloirs de types (gauche)
   typeOrder.forEach((tid, i) => {
     const yFrac = i / Math.max(typeOrder.length - 1, 1);
     const y = MARGIN_Y + yFrac * (H - MARGIN_Y * 2);
@@ -640,7 +623,6 @@ function renderLinks() {
   sel.exit().remove();
   const entered = sel.enter().append('g').attr('class','link-g');
   entered.append('path').attr('class','link');
-  // Hitarea invisible plus large pour le hover
   entered.append('path').attr('class','link-hit')
     .style('fill','none').style('stroke','transparent').style('stroke-width','12');
 
@@ -655,15 +637,12 @@ function renderLinks() {
       .attr('marker-end', `url(#${ensureMarker(col)})`);
   });
 
-  // Tooltips sur arcs
   all.on('mouseover.tip', (ev, d) => {
     const et = GRAPH_DATA.edgeTypes[d.type];
     showTooltip(ev, `<strong>${et ? et.label : d.type}</strong><br>${d.label||''}`);
   }).on('mousemove.tip', moveTooltip).on('mouseout.tip', hideTooltip);
 
-  // Positionner tous les arcs
   updateAllLinkPaths(all);
-
   applyDimmingVisual();
 }
 
@@ -701,11 +680,9 @@ function renderNodes() {
 
   const all = gNodes.selectAll('.node-group');
 
-  // Drag handler
   const drag = d3.drag()
     .on('start', function(event, d) {
       if (!state.simRunning && simulation) return;
-      // Stopper la vitesse du nœud dans la simulation
       if (simulation) {
         const sn = simulation.nodes().find(n => n.id === d.id);
         if (sn) { sn.fx = sn.x; sn.fy = sn.y; }
@@ -713,17 +690,13 @@ function renderNodes() {
       d3.select(this).raise();
     })
     .on('drag', function(event, d) {
-      // Mettre à jour la position
       nodePos[d.id] = { x: event.x, y: event.y, vx: 0, vy: 0 };
       if (simulation) {
         const sn = simulation.nodes().find(n => n.id === d.id);
         if (sn) { sn.fx = event.x; sn.fy = event.y; sn.x = event.x; sn.y = event.y; }
-        // Réchauffer la simulation
         simulation.alpha(Math.max(simulation.alpha(), 0.1)).restart();
       }
-      // Mettre à jour la position visuelle immédiatement
       d3.select(this).attr('transform', `translate(${event.x},${event.y})`);
-      // Redessiner les liens connectés
       gLinks.selectAll('.link-g').select('.link,.link-hit').attr('d', e => {
         const s = nodePos[e.from], t2 = nodePos[e.to];
         if (!s || !t2) return '';
@@ -734,7 +707,7 @@ function renderNodes() {
       nodePos[d.id] = { x: event.x, y: event.y, vx: 0, vy: 0 };
       if (simulation) {
         const sn = simulation.nodes().find(n => n.id === d.id);
-        if (sn) { sn.fx = null; sn.fy = null; } // libérer pour que la sim reprenne
+        if (sn) { sn.fx = null; sn.fy = null; }
       }
     });
 
@@ -751,7 +724,6 @@ function renderNodes() {
   .on('mousemove.tip', moveTooltip)
   .on('mouseout.tip', hideTooltip);
 
-  // Positionner les nœuds
   all.attr('transform', d => {
     const p = nodePos[d.id];
     return p ? `translate(${p.x},${p.y})` : 'translate(0,0)';
@@ -880,7 +852,7 @@ function renderDetailPanel(nodeId) {
         </div>
       </div>
       <button onclick="document.getElementById('detail-panel').classList.remove('open');state.selectedNode=null;clearDimming();"
-        style="flex-shrink:0;width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:var(--radius-sm);background:var(--color-surface-offset);color:var(--color-text-muted);border:1px solid var(--color-border);cursor:pointer">✕</button>
+        style="flex-shrink:0;width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:var(--radius-sm);background:var(--color-surface-offset);color:var(--color-text-muted);border:1px solid var(--color-border);cursor:pointer" aria-label="Fermer le panneau">✕</button>
     </div>
     <div>
       <div class="section-title">Description</div>
@@ -954,113 +926,95 @@ function showTooltip(event, html) {
   moveTooltip(event);
 }
 function moveTooltip(event) {
-  const x = Math.min(event.clientX + 14, window.innerWidth - 280);
-  const y = Math.min(event.clientY + 14, window.innerHeight - 80);
-  tooltip.style.left = x + 'px';
-  tooltip.style.top  = y + 'px';
+  const x = event.clientX + 14, y = event.clientY - 10;
+  const rect = tooltip.getBoundingClientRect();
+  tooltip.style.left = (x + rect.width > window.innerWidth ? x - rect.width - 24 : x) + 'px';
+  tooltip.style.top  = (y + rect.height > window.innerHeight ? y - rect.height - 10 : y) + 'px';
 }
 function hideTooltip() { tooltip.classList.remove('visible'); }
 
 // ═══════════════════════════════════════════════════════════
-// FILTRES
+// LÉGENDE
+// ═══════════════════════════════════════════════════════════
+function renderLegend() {
+  const lc = document.getElementById('legend-content');
+  lc.innerHTML = Object.entries(GRAPH_DATA.edgeTypes).map(([,et]) => `
+    <div class="legend-item">
+      <svg width="28" height="8" style="flex-shrink:0">
+        <line x1="0" y1="4" x2="20" y2="4" stroke="${et.color}" stroke-width="1.5"
+          stroke-dasharray="${et.dash !== 'none' ? et.dash : ''}"/>
+        <polygon points="20,0 28,4 20,8" fill="${et.color}"/>
+      </svg>
+      <span>${et.label}</span>
+    </div>`).join('');
+}
+
+document.getElementById('toggle-legend-btn').addEventListener('click', () => {
+  document.getElementById('legend').classList.toggle('visible');
+});
+
+// ═══════════════════════════════════════════════════════════
+// FILTRES UI
 // ═══════════════════════════════════════════════════════════
 function buildFilters() {
-  const ntf = document.getElementById('node-type-filters');
-  const etf = document.getElementById('edge-type-filters');
+  const ntc = document.getElementById('node-type-filters');
+  const etc = document.getElementById('edge-type-filters');
 
-  Object.entries(GRAPH_DATA.nodeTypes).forEach(([id, t]) => {
+  Object.entries(GRAPH_DATA.nodeTypes).forEach(([key, nt]) => {
     const btn = document.createElement('button');
     btn.className = 'filter-tag active';
-    btn.dataset.type = id;
-    btn.innerHTML = `<span class="tag-dot" style="background:${t.color}"></span>${t.icon} ${t.label}`;
-    btn.style.color = t.color;
-    btn.style.background = t.color + '18';
-    btn.style.borderColor = t.color + '40';
+    btn.style.cssText = `background:${nt.color}18;color:${nt.color};border-color:${nt.color}40`;
+    btn.innerHTML = `<span class="tag-dot" style="background:${nt.color}"></span>${nt.label}`;
+    btn.dataset.key = key;
     btn.addEventListener('click', () => {
-      btn.classList.toggle('active');
-      state.activeNodeTypes.has(id) ? state.activeNodeTypes.delete(id) : state.activeNodeTypes.add(id);
+      if (state.activeNodeTypes.has(key)) state.activeNodeTypes.delete(key);
+      else state.activeNodeTypes.add(key);
+      btn.classList.toggle('active', state.activeNodeTypes.has(key));
       updateGraph();
     });
-    ntf.appendChild(btn);
+    ntc.appendChild(btn);
   });
 
-  Object.entries(GRAPH_DATA.edgeTypes).forEach(([id, t]) => {
+  Object.entries(GRAPH_DATA.edgeTypes).forEach(([key, et]) => {
     const btn = document.createElement('button');
     btn.className = 'filter-tag active';
-    btn.dataset.etype = id;
-    btn.style.color = t.color;
-    btn.style.background = t.color + '18';
-    btn.style.borderColor = t.color + '40';
-    btn.textContent = t.label;
+    btn.style.cssText = `background:${et.color}18;color:${et.color};border-color:${et.color}40`;
+    btn.innerHTML = `<span class="tag-dot" style="background:${et.color}"></span>${et.label}`;
+    btn.dataset.key = key;
     btn.addEventListener('click', () => {
-      btn.classList.toggle('active');
-      state.activeEdgeTypes.has(id) ? state.activeEdgeTypes.delete(id) : state.activeEdgeTypes.add(id);
+      if (state.activeEdgeTypes.has(key)) state.activeEdgeTypes.delete(key);
+      else state.activeEdgeTypes.add(key);
+      btn.classList.toggle('active', state.activeEdgeTypes.has(key));
       updateGraph();
     });
-    etf.appendChild(btn);
-  });
-
-  // Légende
-  const lc = document.getElementById('legend-content');
-  Object.entries(GRAPH_DATA.edgeTypes).forEach(([id, t]) => {
-    const item = document.createElement('div');
-    item.className = 'legend-item';
-    const dash = t.dash === 'none' ? '' : `stroke-dasharray="${t.dash}"`;
-    item.innerHTML = `
-      <svg width="24" height="10" viewBox="0 0 24 10">
-        <line x1="0" y1="5" x2="24" y2="5" stroke="${t.color}" stroke-width="2" ${dash}/>
-      </svg>
-      <span>${t.label}</span>`;
-    lc.appendChild(item);
+    etc.appendChild(btn);
   });
 }
 
-// ═══════════════════════════════════════════════════════════
-// CONTRÔLES
-// ═══════════════════════════════════════════════════════════
 document.getElementById('search-input').addEventListener('input', e => {
-  state.searchText = e.target.value;
-  updateGraph();
-});
-document.getElementById('year-min').addEventListener('change', e => {
-  state.yearMin = parseInt(e.target.value) || -100000;
-  // Invalider toutes les positions pour recalculer selon le filtre
+  state.searchText = e.target.value.trim();
   Object.keys(nodePos).forEach(k => delete nodePos[k]);
   updateGraph();
 });
+
+document.getElementById('year-min').addEventListener('change', e => {
+  state.yearMin = parseInt(e.target.value) || -100000;
+  Object.keys(nodePos).forEach(k => delete nodePos[k]);
+  updateGraph();
+});
+
 document.getElementById('year-max').addEventListener('change', e => {
   state.yearMax = parseInt(e.target.value) || 2026;
   Object.keys(nodePos).forEach(k => delete nodePos[k]);
   updateGraph();
 });
 
-// Simulation toggle
-const simToggle = document.getElementById('sim-toggle');
-const simLabel  = document.getElementById('sim-label');
-const simIcon   = document.getElementById('sim-icon');
-simToggle.addEventListener('click', () => {
-  state.simRunning = !state.simRunning;
-  if (state.simRunning) {
-    simToggle.classList.add('running');
-    simToggle.classList.remove('stopped');
-    simLabel.textContent = 'Stopper la simulation';
-    simIcon.setAttribute('points', '2,2 10,2 10,10 2,10'); // icône pause
-    const visNodes = getVisibleNodes();
-    const visEdges = getVisibleEdges(visNodes.map(n=>n.id));
-    buildSimulation(visNodes, visEdges);
-  } else {
-    simToggle.classList.remove('running');
-    simToggle.classList.add('stopped');
-    simLabel.textContent = 'Activer la simulation';
-    simIcon.setAttribute('points', '2,1 11,6 2,11'); // icône play
-    if (simulation) { simulation.stop(); simulation = null; }
-  }
-});
-
 document.getElementById('reset-btn').addEventListener('click', () => {
-  state.searchText = ''; state.yearMin = -100000; state.yearMax = 2026;
   state.activeNodeTypes = new Set(Object.keys(GRAPH_DATA.nodeTypes));
   state.activeEdgeTypes = new Set(Object.keys(GRAPH_DATA.edgeTypes));
+  state.searchText = '';
+  state.yearMin = -100000;
+  state.yearMax = 2026;
   document.getElementById('search-input').value = '';
   document.getElementById('year-min').value = '-100000';
   document.getElementById('year-max').value = '2026';
@@ -1069,42 +1023,46 @@ document.getElementById('reset-btn').addEventListener('click', () => {
   updateGraph();
 });
 
-document.getElementById('zoom-in-btn').addEventListener('click', () => {
-  svg.transition().duration(300).call(zoomBehavior.scaleBy, 1.4);
-});
-document.getElementById('zoom-out-btn').addEventListener('click', () => {
-  svg.transition().duration(300).call(zoomBehavior.scaleBy, 0.7);
-});
-document.getElementById('zoom-reset-btn').addEventListener('click', () => {
-  Object.keys(nodePos).forEach(k => delete nodePos[k]);
-  svg.transition().duration(400).call(zoomBehavior.transform, d3.zoomIdentity.scale(0.62).translate(40, 10));
-  setTimeout(updateGraph, 420);
-});
-document.getElementById('toggle-legend-btn').addEventListener('click', () => {
-  document.getElementById('legend').classList.toggle('visible');
+// SIMULATION TOGGLE
+document.getElementById('sim-toggle').addEventListener('click', () => {
+  state.simRunning = !state.simRunning;
+  const btn = document.getElementById('sim-toggle');
+  const lbl = document.getElementById('sim-label');
+  const ico = document.getElementById('sim-icon');
+  if (state.simRunning) {
+    btn.classList.replace('stopped','running');
+    lbl.textContent = 'Arrêter la simulation';
+    ico.innerHTML = '<rect x="2" y="1" width="3" height="10"/><rect x="7" y="1" width="3" height="10"/>';
+    const vis = getVisibleNodes();
+    buildSimulation(vis, getVisibleEdges(vis.map(n=>n.id)));
+  } else {
+    btn.classList.replace('running','stopped');
+    lbl.textContent = 'Activer la simulation';
+    ico.innerHTML = '<polygon points="2,1 11,6 2,11"/>';
+    if (simulation) { simulation.stop(); simulation = null; }
+  }
 });
 
-// ═══════════════════════════════════════════════════════════
+// ZOOM
+document.getElementById('zoom-in-btn').addEventListener('click',  () => svg.transition().call(zoomBehavior.scaleBy, 1.4));
+document.getElementById('zoom-out-btn').addEventListener('click', () => svg.transition().call(zoomBehavior.scaleBy, 1/1.4));
+document.getElementById('zoom-reset-btn').addEventListener('click', () => {
+  svg.transition().duration(500).call(zoomBehavior.transform, d3.zoomIdentity);
+});
+
 // RESIZE
-// ═══════════════════════════════════════════════════════════
-let resizeTimer;
 window.addEventListener('resize', () => {
-  clearTimeout(resizeTimer);
-  resizeTimer = setTimeout(() => {
-    Object.keys(nodePos).forEach(k => delete nodePos[k]);
-    renderGraph();
-  }, 150);
+  W = svgEl.clientWidth; H = svgEl.clientHeight;
+  Object.keys(nodePos).forEach(k => delete nodePos[k]);
+  renderGraph();
 });
 
 // ═══════════════════════════════════════════════════════════
 // INIT
 // ═══════════════════════════════════════════════════════════
 buildFilters();
-setTimeout(() => {
-  W = svgEl.clientWidth; H = svgEl.clientHeight;
-  renderGraph();
-  svg.call(zoomBehavior.transform, d3.zoomIdentity.scale(0.62).translate(40, 10));
-}, 120);
+renderLegend();
+renderGraph();
 </script>
 </body>
 </html>
