@@ -41,7 +41,7 @@ Les itérations sont volontairement courtes : **un commit = une tâche**.
 
 ## Phase 2 — Architecture multi-fichiers de données 🔧 En cours
 
-> Passer d'un fichier monolithique à une architecture extensible par dossiers de ressources.
+> Passer d'un fichier monolithique `epistemia_data.js` à une architecture extensible par dossiers de ressources.
 > Objectif : ajouter une nouvelle thématique = créer un fichier + ajouter une ligne dans le manifeste.
 
 ### Itération 2.A — Créer le schéma partagé
@@ -50,15 +50,16 @@ Les itérations sont volontairement courtes : **un commit = une tâche**.
 - [x] Créer `resources/schema.js` exportant `export const SCHEMA = { nodeTypes, edgeTypes }`
 - [x] Vérifier que le fichier est valide JS (import manuel dans la console navigateur)
 
-### Itération 2.B — Premier fichier thématique
+### Itération 2.B — Fichiers thématiques
 
-- [x] Créer `resources/foundations/cognitive.js` avec les nœuds/arcs des origines cognitives
+- [x] Premier fichier thématique : créer `resources/foundations/cognitive.js` avec les nœuds/arcs des origines cognitives
 - [x] Respecter le schéma : `export const TOPIC = { meta: { title, theme }, nodes: [...], edges: [...] }`
 - [x] Tester l'import dans la console : `import('./resources/foundations/cognitive.js').then(m => console.log(m.TOPIC))`
+Les autres fichiers thématiques seront créés dans des répertoires selon le même procédé.
 
 ### Itération 2.C — Manifeste et chargement dynamique
 
-- [ ] Créer `resources/index.js` : tableau de fonctions d'import dynamique
+- [x] Créer `resources/index.js` : tableau de fonctions d'import dynamique
   ```js
   // resources/index.js
   export const TOPICS = [
@@ -85,6 +86,7 @@ Les itérations sont volontairement courtes : **un commit = une tâche**.
   - [ ] `resources/semantic-web/ontologies.js`
   - [ ] `resources/cognitive-architectures/cognitive.js`
   - [ ] `resources/modern-ai/llm-generative.js`
+- [ ] Migrer tous les arcs de `epistemia_data.js` qui relient des noeuds d'une thématique à une thématique différente, dans un fichier séparé `resources/cross-edges/T1_T2.js` (where T1 and T2 are the thematics of the nodes)
 - [ ] Mettre à jour `resources/index.js` avec tous les fichiers
 - [ ] Supprimer (ou archiver) `epistemia_data.js` devenu obsolète
 - [ ] Mettre à jour le `README.md` : section "Ajouter une thématique"
