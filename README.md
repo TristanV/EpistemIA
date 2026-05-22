@@ -16,13 +16,13 @@ L'ambition est de cartographier :
 - les **fondements mathématiques** de l'IA (calcul des probabilités, algèbre linéaire, optimisation, théorie de l'information)
 - les **grandes familles techniques** (IA symbolique, connexionnisme, apprentissage statistique, apprentissage profond, IA générative)
 - les **ruptures et convergences** qui ont façonné le domaine
-- l'**IA contemporaine** et ses développements récents (LLMs, agents, IA multimodale)
+- l'**IA contemporaine** et ses développements récents (LLMs, agents, IA multimodale, neuro-symbolique)
 
 ---
 
-## Fonctionnalités actuelles
+## Fonctionnalités
 
-- 🗺️ **Graphe interactif** avec axe temporel logarithmique (de −100 000 à aujourd'hui)
+- 🗺️ **Graphe interactif** avec axe temporel logarithmique (de −100 000 à aujourd'hui)
 - 🔍 **Filtres** par type de nœud, type de transition et plage temporelle
 - 🔎 **Recherche** par label, auteur, tag ou description
 - ⚡ **Simulation de forces** D3.js pour réorganiser le graphe
@@ -36,138 +36,134 @@ L'ambition est de cartographier :
 
 ```
 epistemIA/
-├── index.html            ← Application complète (HTML + CSS + JS)
-├── epistemia_data.js     ← Données du graphe (monolithique — temporaire)
-├── resources/            ← à créer — données découpées par thématique (Phase 2)
-│   ├── schema.js           ← nodeTypes + edgeTypes partagés
-│   ├── index.js            ← manifeste des imports
-│   ├── foundations/
-│   ├── symbolic-ai/
-│   ├── connectionist/
-│   ├── statistical/
-│   └── modern-ai/
-├── tools/                ← à créer — scripts de validation (Phase 6)
+├── index.html                        ← Squelette HTML + bootstrap ES module
+├── style.css                         ← Design graphique (Phase 0.A)
+├── app.js                            ← Couche d'interaction D3.js (Phase 0.B)
+├── epistemia_data.js                 ← Données legacy (conservé pour référence)
+├── resources/                        ← Données découpées par thématique (Phase 2 ✅)
+│   ├── schema.js                       ← nodeTypes + edgeTypes partagés
+│   ├── index.js                        ← Manifeste + buildFullGraph()
+│   ├── 01_fondations-cognitives.js
+│   ├── 02_fondations-connexionnistes.js
+│   ├── 03_ia-symbolique.js
+│   ├── 04_systemes-experts.js
+│   ├── 05_architectures-cognitives.js
+│   ├── 06_vectoriel.js
+│   ├── 07_probabiliste.js
+│   ├── 08_ontologies.js
+│   ├── 09_memoire-augmentee.js
+│   ├── 10_transformers.js
+│   ├── 11_neuro-symbolique.js
+│   └── foundations/
+│       └── cognitive.js              ← Prototype initial (remplacé par 01_)
+├── tools/                            ← Scripts de validation (Phase 3 — à venir)
 ├── README.md
 ├── ROADMAP.md
 └── LICENSE
+```
+
+### Principe de chargement
+
+Depuis la Phase 2.C, `index.html` n'embarque plus aucune donnée inline.
+Un **bootstrap ES module** importe `buildFullGraph()` depuis `resources/index.js`,
+expose le graphe composé en `window.GRAPH_DATA`, puis charge `app.js` dynamiquement :
+
+```html
+<script type="module">
+  import { buildFullGraph } from './resources/index.js';
+  window.GRAPH_DATA = buildFullGraph();
+  const s = document.createElement('script');
+  s.src = './app.js';
+  document.body.appendChild(s);
+</script>
 ```
 
 L'application est **100% statique** et s'exécute directement via GitHub Pages sans aucun backend.
 
 ---
 
-## Format des données
+## Ajouter une thématique
 
-### Objet global actuel
+Pour enrichir le graphe avec un nouveau fichier thématique :
 
-Le fichier `epistemia_data.js` expose un objet global `GRAPH_DATA` :
+1. Créer `resources/NN_ma-thematique.js` en respectant le format :
 
 ```js
-const GRAPH_DATA = {
-  meta: { title: "...", version: "...", description: "..." },
-  nodeTypes: { ... },  // définitions des types de nœuds
-  edgeTypes:  { ... },  // définitions des types d'arcs
-  nodes: [ ... ],
-  edges: [ ... ]
+export const TOPIC = {
+  meta: {
+    title: "Ma thématique",
+    epoch: 12,
+    period: [2024, 2026],
+    description: "..."
+  },
+  nodes: [ /* voir schéma ci-dessous */ ],
+  edges: [ /* voir schéma ci-dessous */ ]
 };
+```
+
+2. Ajouter l'import dans `resources/index.js` :
+
+```js
+import { TOPIC as maThematique } from './NN_ma-thematique.js';
+// puis ajouter maThematique dans le tableau TOPICS
 ```
 
 ### Schéma d'un nœud
 
 ```js
 {
-  id: "identifiant-unique",             // snake-case, sans espace
+  id: "identifiant-unique",             // kebab-case, sans espace
   label: "Nom affiché",
-  type: "Nom du type",                  // clé valide de nodeTypes
+  type: "Nom du type",                  // clé valide de schema.js > nodeTypes
   period: [anneeDebut, anneeFin],       // années (négatif = av. J.-C.)
   periodLabel: "Texte libre",
+  year: 1950,                           // année principale (pour le tri)
   description: "...",
   authors: ["Prénom Nom"],
   tags: ["concept", "domaine"],
   keyWorks: [
-    { title: "Titre", year: 1950, url: "https://..." }
+    { title: "Titre", authors: "Auteurs", year: 1950, url: "https://..." }
   ],
-  problemsSolved: ["Problème résolu"],
-  problemsRaised: ["Question ouverte"]
+  problemsSolved: ["Problème résolu 1"],
+  problemsRaised: ["Question ouverte 1"]
 }
 ```
 
 ### Schéma d'un arc
 
 ```js
-{
-  id: "e001",
-  from: "id-source",
-  to:   "id-cible",
-  type: "Nom du type",                  // clé valide de edgeTypes
-  label: "Description de la relation"
-}
-```
-
-### Format thématique — Phase 2 (cible)
-
-Lorsque l'architecture multi-fichiers sera mise en place (voir [ROADMAP.md](ROADMAP.md)), chaque fichier thématique respectera ce schéma :
-
-```js
-// resources/foundations/cognitive.js
-export const TOPIC = {
-  meta: {
-    title: "Origines cognitives",
-    theme: "foundations",               // dossier parent
-    description: "..."
-  },
-  nodes: [ /* schéma nœud ci-dessus */ ],
-  edges: [ /* schéma arc ci-dessus */ ]
-};
-```
-
-Le schéma des types (`nodeTypes`, `edgeTypes`) sera isolé dans `resources/schema.js` :
-
-```js
-// resources/schema.js
-export const SCHEMA = {
-  nodeTypes: {
-    "Fondation cognitive": { label: "Fondation cognitive", color: "#8B6914", icon: "🏛️" },
-    // ...
-  },
-  edgeTypes: {
-    "Evolution": { label: "Évolution", color: "#2d7a2d", dash: "none" },
-    // ...
-  }
-};
+{ from: "id-source", to: "id-cible", type: "Evolution", label: "Description" }
+// type doit être une clé valide de schema.js > edgeTypes
 ```
 
 ---
 
 ## Développement local
 
-> Aucune installation requise. L'application s'ouvre directement dans un navigateur.
-
 ```bash
 # Cloner le dépôt
 git clone https://github.com/TristanV/EpistemIA.git
 cd EpistemIA
 
-# Ouvrir dans le navigateur
-open index.html
-# ou : npx serve .  (recommandé pour la Phase 2 avec modules ES)
+# Lancer un serveur HTTP local (requis pour les modules ES)
+npx serve .
+# ou : python -m http.server 8080
+# ou : extension VS Code Live Server
 ```
 
-> ⚠️ **Phase 2 et au-delà** : les modules ES (`import`/`export`) requièrent un serveur HTTP local
-> (même basique : `npx serve .`, `python -m http.server`, ou l'extension VS Code Live Server).
-> GitHub Pages sert les fichiers en HTTPS et est donc directement compatible.
+> ⚠️ Les modules ES (`import`/`export`) requièrent un serveur HTTP local — l'ouverture directe
+> de `index.html` via `file://` échouera. GitHub Pages (HTTPS) est directement compatible.
 
 ---
 
 ## Contribuer
 
-Pour enrichir la base de connaissances :
+1. Forker le dépôt
+2. Créer un fichier `resources/NN_ma-thematique.js` (voir format ci-dessus)
+3. L'ajouter dans `resources/index.js`
+4. Ouvrir une Pull Request
 
-1. **Avant la Phase 2** : éditer `epistemia_data.js` directement (ajouter dans `nodes[]` et `edges[]`)
-2. **Après la Phase 2** : créer un fichier dans le bon dossier de `resources/` et ajouter une ligne dans `resources/index.js`
-
-Dans tous les cas, respecter les schémas décrits ci-dessus. Un guide de contribution détaillé (`CONTRIBUTING.md`) sera ajouté en Phase 6.
-
+Un guide de contribution détaillé (`CONTRIBUTING.md`) sera ajouté en Phase 6.
 Consulter [ROADMAP.md](ROADMAP.md) pour les prochaines évolutions.
 
 ---
@@ -178,6 +174,7 @@ Consulter [ROADMAP.md](ROADMAP.md) pour les prochaines évolutions.
 |---|---|
 | [D3.js v7](https://d3js.org/) | Rendu SVG, simulation de forces, zoom/pan |
 | [Fontshare](https://www.fontshare.com/) | Typographies (Satoshi, Cabinet Grotesk) |
+| ES Modules natifs | Chargement multi-fichiers sans bundler |
 | GitHub Pages | Hébergement statique serverless |
 
 ---
