@@ -8,8 +8,6 @@
 <!-- Dépendances externes -->
 <script src="https://d3js.org/d3.v7.min.js"></script>
 <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&f[]=cabinet-grotesk@400,500,700&display=swap" rel="stylesheet">
-<!-- Données du graphe -->
-<script src="./epistemia_data.js"></script>
 <!-- Design graphique -->
 <link rel="stylesheet" href="./style.css">
 </head>
@@ -103,7 +101,21 @@
 
 <div id="tooltip" role="tooltip"></div>
 
-<!-- Couche d'interaction applicative -->
-<script src="./app.js"></script>
+<!--
+  Bootstrap ES-module :
+  1. Importe buildFullGraph() depuis le manifeste resources/index.js
+  2. Expose le graphe complet en variable globale window.GRAPH_DATA
+  3. Charge dynamiquement app.js (script classique) une fois les données prêtes
+  Cette approche permet de passer au système multi-fichiers sans réécrire app.js.
+-->
+<script type="module">
+  import { buildFullGraph } from './resources/index.js';
+  window.GRAPH_DATA = buildFullGraph();
+
+  const appScript = document.createElement('script');
+  appScript.src = './app.js';
+  document.body.appendChild(appScript);
+</script>
+
 </body>
 </html>
