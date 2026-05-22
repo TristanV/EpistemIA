@@ -6,6 +6,26 @@ Les itérations sont volontairement courtes : **un commit = une tâche**.
 
 ---
 
+## Phase 0 — Refactoring du fichier monolithique `index.html` 🔧 En cours
+
+> **Prioritaire.** Le fichier `index.html` concentre actuellement HTML, CSS et JavaScript dans un seul fichier.
+> Cette phase déporte le design graphique et la couche d'interaction dans des fichiers séparés,
+> pour faciliter la maintenance, la lisibilité et les contributions.
+
+### Itération 0.A — Extraction du CSS → `style.css`
+
+- [x] Créer `style.css` contenant l'intégralité du bloc `<style>` de `index.html`
+- [x] Remplacer le bloc `<style>` par `<link rel="stylesheet" href="./style.css">`
+- [x] Vérifier que l'application s'affiche identiquement après l'extraction
+
+### Itération 0.B — Extraction du JS applicatif → `app.js`
+
+- [x] Créer `app.js` contenant l'intégralité du bloc `<script>` de `index.html`
+- [x] Remplacer le bloc `<script>` inline par `<script src="./app.js"></script>` (après les dépendances)
+- [x] Vérifier que l'application fonctionne identiquement après l'extraction
+
+---
+
 ## Phase 1 — Identité et documentation ✅ Complète
 
 > Poser les bases documentaires et le naming du projet.
@@ -26,15 +46,15 @@ Les itérations sont volontairement courtes : **un commit = une tâche**.
 
 ### Itération 2.A — Créer le schéma partagé
 
-- [ ] Extraire `nodeTypes` et `edgeTypes` de `epistemia_data.js`
-- [ ] Créer `resources/schema.js` exportant `export const SCHEMA = { nodeTypes, edgeTypes }`
-- [ ] Vérifier que le fichier est valide JS (import manuel dans la console navigateur)
+- [x] Extraire `nodeTypes` et `edgeTypes` de `epistemia_data.js`
+- [x] Créer `resources/schema.js` exportant `export const SCHEMA = { nodeTypes, edgeTypes }`
+- [x] Vérifier que le fichier est valide JS (import manuel dans la console navigateur)
 
 ### Itération 2.B — Premier fichier thématique
 
-- [ ] Créer `resources/foundations/cognitive.js` avec les nœuds/arcs des origines cognitives
-- [ ] Respecter le schéma : `export const TOPIC = { meta: { title, theme }, nodes: [...], edges: [...] }`
-- [ ] Tester l'import dans la console : `import('./resources/foundations/cognitive.js').then(m => console.log(m.TOPIC))`
+- [x] Créer `resources/foundations/cognitive.js` avec les nœuds/arcs des origines cognitives
+- [x] Respecter le schéma : `export const TOPIC = { meta: { title, theme }, nodes: [...], edges: [...] }`
+- [x] Tester l'import dans la console : `import('./resources/foundations/cognitive.js').then(m => console.log(m.TOPIC))`
 
 ### Itération 2.C — Manifeste et chargement dynamique
 
@@ -54,11 +74,16 @@ Les itérations sont volontairement courtes : **un commit = une tâche**.
 
 - [ ] Migrer tous les nœuds/arcs restants de `epistemia_data.js` en fichiers thématiques :
   - [ ] `resources/foundations/mathematics.js`
+  - [ ] `resources/foundations/logic.js`
   - [ ] `resources/symbolic-ai/expert-systems.js`
   - [ ] `resources/symbolic-ai/knowledge-representation.js`
+  - [ ] `resources/symbolic-ai/nonmonotonic.js`
   - [ ] `resources/connectionist/neural-networks.js`
   - [ ] `resources/connectionist/deep-learning.js`
   - [ ] `resources/statistical/machine-learning.js`
+  - [ ] `resources/statistical/probabilistic.js`
+  - [ ] `resources/semantic-web/ontologies.js`
+  - [ ] `resources/cognitive-architectures/cognitive.js`
   - [ ] `resources/modern-ai/llm-generative.js`
 - [ ] Mettre à jour `resources/index.js` avec tous les fichiers
 - [ ] Supprimer (ou archiver) `epistemia_data.js` devenu obsolète
@@ -189,8 +214,8 @@ Les itérations sont volontairement courtes : **un commit = une tâche**.
 ## Ordre de priorité recommandé
 
 ```
-Phase 2.A → 2.B → 2.C → 2.D   (architecture, prérequis pour tout le reste)
-Phase 1 restant           (LICENSE, Open Graph — rapide)
+Phase 0.A → 0.B           (refactoring monolithique — prioritaire)
+Phase 2.A → 2.B → 2.C → 2.D   (architecture multi-fichiers)
 Phase 3.A → 3.B           (mobile, haute valeur d'usage)
 Phase 4.A → 4.B           (contenu, enrichissement progressif)
 Phase 6.A → 6.B           (qualité, avant contributions extérieures)
@@ -210,6 +235,7 @@ Toute évolution architecturale doit respecter cette contrainte.
 
 | Problème | Solution retenue | Pourquoi |
 |---|---|---|
+| Fichier `index.html` monolithique | Séparation `style.css` + `app.js` | Maintenabilité, lisibilité, contributions |
 | Fichier de données monolithique | Modules ES + manifeste `resources/index.js` | Serverless, pas de build, ajout = 1 ligne |
 | Lister un dossier côté client | Impossible sur GitHub Pages | Manifeste explicite obligatoire |
 | Données narratives (prose) | Fichiers `.md` chargés via `fetch` | Même origine, compatible serverless |
