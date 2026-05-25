@@ -38,25 +38,77 @@ const nodePos = {};
 })();
 
 // ═══════════════════════════════════════════════════════════
-// ÉCHELLE TEMPORELLE LOGARITHMIQUE INVERSÉE
+// ÉCHELLE TEMPORELLE ADAPTATIVE : BUCKETS PAR DENSITÉ
+// Divise le temps en périodes, chaque période a une largeur
+// proportionnelle au nombre d'événements
 // ═══════════════════════════════════════════════════════════
 const PRESENT = 2026;
 const MARGIN_X = 110;
 
-function yearToLogX(year) {
-  const dist = Math.max(PRESENT - year, 0.5);
-  return Math.log10(dist + 1);
+function computeDensityBuckets(nodes) {
+  // Créer des "buckets" (plages) basées sur la densité
+  // Buckets : [2020-2026], [2010-2020], [2000-2010], [1950-2000], [1900-1950], [avant 1900]
+
+  const buckets = [
+    { start: 2020, end: 2026, label: '2020-2026' },
+    { start: 2010, end: 2020, label: '2010-2020' },
+    { start: 2000, end: 2010, label: '2000-2010' },
+    { start: 1980, end: 2000, label: '1980-2000' },
+    { start: 1950, end: 1980, label: '1950-1980' },
+    { start: 1900, end: 1950, label: '1900-1950' },
+    { start: 1800, end: 1900, label: '1800-1900' },
+    { start: 1600, end: 1800, label: '1600-1800' },
+    { start: 1000, end: 1600, label: '1000-1600' },
+    { start: 0, end: 1000, label: '0-1000' },
+    { start: -100000, end: 0, label: 'avant 0' }
+  ];
+
+  // Compter les événements par bucket
+  buckets.forEach(bucket => {
+    bucket.count = nodes.filter(n => {
+      const mid = (n.period[0] + n.period[1]) / 2;
+      return mid >= bucket.start && mid < bucket.end;
+    }).length;
+  });
+
+  return buckets;
 }
 
 function buildLogScale(nodes, W) {
-  const allYears = nodes.map(n => (n.period[0] + n.period[1]) / 2);
-  const logVals = allYears.map(y => yearToLogX(y));
-  const logMin = Math.min(...logVals);
-  const logMax = Math.max(...logVals);
+  const buckets = computeDensityBuckets(nodes);
+
+  // Assigner une largeur proportionnelle à chaque bucket
+  // Minimum : 40px par bucket, maximum : basé sur la densité
+  let cumulX = 0;
+  buckets.forEach(bucket => {
+    // Au minimum 40px, puis 20px par événement (jusqu'à max 300px)
+    const eventWidth = Math.min(bucket.count * 20, 300);
+    bucket.xStart = cumulX;
+    bucket.xWidth = Math.max(40, eventWidth);
+    bucket.xEnd = cumulX + bucket.xWidth;
+    cumulX += bucket.xWidth;
+  });
+
+  // Normaliser à la largeur disponible
+  const totalWidth = cumulX;
+  const availableWidth = W - MARGIN_X * 2;
+  const scale = availableWidth / totalWidth;
+
   return function (year) {
-    const lv = yearToLogX(year);
-    const frac = logMax === logMin ? 0.5 : (logMax - lv) / (logMax - logMin);
-    return MARGIN_X + frac * (W - MARGIN_X * 2);
+    // Trouver le bucket contenant l'année
+    const bucket = buckets.find(b => year >= b.start && year < b.end) || buckets[buckets.length - 1];
+
+    // Position dans le bucket (0-1) : plus grand year = plus à droite
+    const bucketRange = bucket.end - bucket.start;
+    const posInBucket = (year - bucket.start) / bucketRange;
+
+    // Position x absolue
+    const xAbs = bucket.xStart + posInBucket * bucket.xWidth;
+
+    // Inverser : droite à gauche devient gauche à droite
+    const xInverted = totalWidth - xAbs;
+
+    return MARGIN_X + xInverted * scale;
   };
 }
 
@@ -252,7 +304,10 @@ function renderAxis() {
     gAxis.append('line').attr('class', 'time-line')
       .attr('x1', t.x).attr('x2', t.x).attr('y1', 0).attr('y2', H);
     gAxis.append('text').attr('class', 'time-label')
-      .attr('x', t.x + 2).attr('y', H - 6).text(t.label);
+      .attr('x', t.x).attr('y', H - 6)
+      .attr('transform', `rotate(-75 ${t.x} ${H - 6})`)
+      .attr('text-anchor', 'end')
+      .text(t.label);
   });
 
   typeOrder.forEach((tid, i) => {
