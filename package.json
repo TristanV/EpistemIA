@@ -1,0 +1,33 @@
+{
+  "name": "epistemia",
+  "version": "2.1.0",
+  "description": "EpistemIA — Graphe épistémologique interactif retraçant l'histoire, les techniques, les fondements mathématiques et l'évolution de l'Intelligence Artificielle.",
+  "main": "resources/index.js",
+  "homepage": "https://github.com/tristanV/epistemIA",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tristanV/epistemIA.git"
+  },
+  "scripts": {
+    "dev": "npx serve .",
+    "validate": "node tools/validate.js",
+    "test": "npm run validate",
+    "help": "echo 'Available scripts: npm run dev, npm run validate, npm run test'"
+  },
+  "keywords": [
+    "intelligence artificielle",
+    "IA",
+    "histoire",
+    "graphe",
+    "epistemologie",
+    "d3.js",
+    "knowledge graph",
+    "interactive visualization"
+  ],
+  "author": "Tristan Vanrullen",
+  "license": "MIT",
+  "devDependencies": {},
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}

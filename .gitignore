@@ -1,6 +1,53 @@
+# ============================================================
 # EpistemIA .gitignore
+# Exclut les fichiers de build, OS, dépendances et outils locaux
+# ============================================================
+
+# === Node.js ===
 node_modules/
+package-lock.json
+npm-debug.log
+
+# === OS ===
 .DS_Store
-*.log
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# === IDE & Editors ===
+.vscode/
+.idea/
+.vim/
+*.sublime-workspace
+*.sublime-project
+
+# === Claude & LLM Tools ===
+# Exclure les fichiers générés par Claude, Cowork, et autres outils IA
+CLAUDE.md
+.claude/
+.cowork/
+claude_*.md
+*.claude
+artifacts/
+.artifacts/
+*_artifact*
+
+# === Build & Temporary ===
 *.bak
+*.log
+dist/
+build/
+.cache/
+
+# === Project-specific ===
 finalize-repo.sh
+.env
+.env.local
+
+# === Documentation temporaire ===
+# Garder les docs officielles (README.md, ROADMAP.md, etc.)
+# mais exclure les brouillons locaux
+temp/
+scratch/
+_*.md
