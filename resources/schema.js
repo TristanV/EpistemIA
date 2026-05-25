@@ -35,4 +35,4 @@ const SCHEMA = {
 
 };
 
-if (typeof module !== 'undefined' && module.exports) module.exports = SCHEMA;
+export { SCHEMA };
