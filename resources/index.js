@@ -18,6 +18,7 @@ import { TOPIC as ontologies }              from './08_ontologies.js';
 import { TOPIC as memoireAugmentee }        from './09_memoire-augmentee.js';
 import { TOPIC as transformers }            from './10_transformers.js';
 import { TOPIC as neuroSymbolique }         from './11_neuro-symbolique.js';
+import { CROSS_TOPIC as liensInterThematiques } from './liens-inter-thematiques.js';
 
 export const TOPICS = [
   fondationsCognitives,
@@ -31,6 +32,7 @@ export const TOPICS = [
   memoireAugmentee,
   transformers,
   neuroSymbolique,
+  liensInterThematiques,
 ];
 
 /**
